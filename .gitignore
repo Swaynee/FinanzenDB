@@ -1,0 +1,14 @@
+# Java / Maven
+target/
+*.class
+
+# VS Code
+.vscode/
+
+# Lokale Konfiguration
+.env
+*.local
+
+# Betriebssystem
+.DS_Store
+Thumbs.db
