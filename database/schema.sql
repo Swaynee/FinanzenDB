@@ -92,18 +92,25 @@ CREATE TABLE Notiz
 -- WIEDERKEHRENDE TRANSAKTION
 -- Vorlage für die automatische Erzeugung von Transaktionen
 -- =========================================================
+DROP TABLE IF EXISTS Transaktion_Wiederkehrend;
 CREATE TABLE Transaktion_Wiederkehrend 
 (
     transaktion_wiederkehrend_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
+    transaktionsart_id INT UNSIGNED NOT NULL,
+    konto_id INT UNSIGNED,
+    konto_ziel_id INT UNSIGNED,
+    budget_id INT UNSIGNED,
+    budget_ziel_id INT UNSIGNED,
     beschreibung VARCHAR(255) NULL,
     betrag DECIMAL(12, 2) NOT NULL,
     zahlungstag TINYINT UNSIGNED NOT NULL,
-    transaktionsart_id INT UNSIGNED NOT NULL,
     gueltig_ab DATE NOT NULL,
     gueltig_bis DATE NULL,
-    aktiv BOOLEAN NOT NULL DEFAULT TRUE,
     PRIMARY KEY (transaktion_wiederkehrend_id),
     CONSTRAINT fk_wiederkehrend_art FOREIGN KEY (transaktionsart_id) REFERENCES Transaktionsart (transaktionsart_id),
+    CONSTRAINT fk_konto FOREIGN KEY (konto_id) REFERENCES Konto (konto_id),
+    CONSTRAINT fk_konto_ziel FOREIGN KEY (konto_ziel_id) REFERENCES Konto (konto_id),
+    CONSTRAINT fk_budget FOREIGN KEY (budget_id) REFERENCES Budget (budget_id),
+    CONSTRAINT fk_budget_ziel FOREIGN KEY (budget_ziel_id) REFERENCES Budget (budget_id),
     CONSTRAINT chk_zahlungstag CHECK (zahlungstag BETWEEN 1 AND 31)
 );
