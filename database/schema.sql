@@ -38,20 +38,22 @@ CREATE TABLE Transaktionsart
 
 -- TRANSAKTION
 -- =========================================================
+DROP TABLE IF EXISTS Transaktion;
 CREATE TABLE Transaktion 
 (
     transaktion_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    transaktionsart INT UNSIGNED NOT NULL,
+    transaktionsart_id INT UNSIGNED NOT NULL,
     datum DATE NOT NULL,
     planungsmonat DATE NOT NULL,
     beschreibung VARCHAR(255) NOT NULL,
     PRIMARY KEY (transaktion_id),
-    CONSTRAINT fk_transaktionsart FOREIGN KEY (transaktionsart) REFERENCES Transaktionsart (transaktionsart_id)
+    CONSTRAINT fk_transaktionsart FOREIGN KEY (transaktionsart_id) REFERENCES Transaktionsart (transaktionsart_id)
 );
 
 -- BUCHUNG
 -- Tatsächliche Geldbewegung auf einem Konto
 -- =========================================================
+DROP TABLE IF EXISTS Buchung;
 CREATE TABLE Buchung 
 (
     buchung_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -66,6 +68,7 @@ CREATE TABLE Buchung
 -- BUDGET_BUCHUNG
 -- Bewegung innerhalb eines Budgets
 -- =========================================================
+DROP TABLE IF EXISTS Budget_Buchung;
 CREATE TABLE Budget_Buchung 
 (
     budget_buchung_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -79,13 +82,14 @@ CREATE TABLE Budget_Buchung
 
 -- NOTIZ
 -- =========================================================
+DROP TABLE IF EXISTS Notiz;
 CREATE TABLE Notiz 
 (
     notiz_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     text TEXT NOT NULL,
     betrag DECIMAL(12, 2),
     faellig VARCHAR(50),
-    geloescht BOOLEAN NOT NULL DEFAULT TRUE,
+    geloescht BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (notiz_id)
 );
 
@@ -104,6 +108,7 @@ CREATE TABLE Transaktion_Wiederkehrend
     beschreibung VARCHAR(255) NULL,
     betrag DECIMAL(12, 2) NOT NULL,
     zahlungstag TINYINT UNSIGNED NOT NULL,
+    planungsmonat_versatz TINYINT NOT NULL DEFAULT 0,
     gueltig_ab DATE NOT NULL,
     gueltig_bis DATE NULL,
     PRIMARY KEY (transaktion_wiederkehrend_id),

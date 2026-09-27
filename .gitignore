@@ -12,3 +12,6 @@ target/
 # Betriebssystem
 .DS_Store
 Thumbs.db
+
+#alte DB migrationsdaten
+/database/migrate.sql
