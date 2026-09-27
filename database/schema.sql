@@ -4,7 +4,8 @@ USE finanzen;
 
 -- KONTO
 -- =========================================================
-CREATE TABLE Konto (
+CREATE TABLE Konto 
+(
     konto_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     konto_art VARCHAR(30) NOT NULL,
@@ -17,7 +18,8 @@ CREATE TABLE Konto (
 
 -- BUDGET
 -- =========================================================
-CREATE TABLE Budget (
+CREATE TABLE Budget 
+(
     budget_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     aktiv BOOLEAN NOT NULL DEFAULT TRUE,
@@ -26,7 +28,8 @@ CREATE TABLE Budget (
 
 -- TRANSAKTIONSART
 -- =========================================================
-CREATE TABLE Transaktionsart (
+CREATE TABLE Transaktionsart 
+(
     transaktionsart_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL,
     PRIMARY KEY (transaktionsart_id),
@@ -35,22 +38,22 @@ CREATE TABLE Transaktionsart (
 
 -- TRANSAKTION
 -- =========================================================
-CREATE TABLE Transaktion (
+CREATE TABLE Transaktion 
+(
     transaktion_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     transaktionsart INT UNSIGNED NOT NULL,
     datum DATE NOT NULL,
     planungsmonat DATE NOT NULL,
     beschreibung VARCHAR(255) NOT NULL,
     PRIMARY KEY (transaktion_id),
-    CONSTRAINT fk_transaktionsart,
-    FOREIGN KEY (transaktionsart),
-    REFERENCES Transaktionsart (transaktionsart_id)
+    CONSTRAINT fk_transaktionsart FOREIGN KEY (transaktionsart) REFERENCES Transaktionsart (transaktionsart_id)
 );
 
 -- BUCHUNG
 -- Tatsächliche Geldbewegung auf einem Konto
 -- =========================================================
-CREATE TABLE Buchung (
+CREATE TABLE Buchung 
+(
     buchung_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     transaktion_id BIGINT UNSIGNED NOT NULL,
     konto_id INT UNSIGNED NOT NULL,
@@ -63,7 +66,8 @@ CREATE TABLE Buchung (
 -- BUDGET_BUCHUNG
 -- Bewegung innerhalb eines Budgets
 -- =========================================================
-CREATE TABLE Budget_Buchung (
+CREATE TABLE Budget_Buchung 
+(
     budget_buchung_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     transaktion_id BIGINT UNSIGNED NOT NULL,
     budget_id INT UNSIGNED NOT NULL,
@@ -75,21 +79,21 @@ CREATE TABLE Budget_Buchung (
 
 -- NOTIZ
 -- =========================================================
-CREATE TABLE Notiz (
+CREATE TABLE Notiz 
+(
     notiz_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    transaktion_id BIGINT UNSIGNED NOT NULL,
     text TEXT NOT NULL,
     betrag DECIMAL(12, 2),
     faellig VARCHAR(50),
     geloescht BOOLEAN NOT NULL DEFAULT TRUE,
-    PRIMARY KEY (notiz_id),
-    CONSTRAINT fk_notiz_transaktion FOREIGN KEY (transaktion_id) REFERENCES Transaktion (transaktion_id) ON DELETE CASCADE
+    PRIMARY KEY (notiz_id)
 );
 
 -- WIEDERKEHRENDE TRANSAKTION
 -- Vorlage für die automatische Erzeugung von Transaktionen
 -- =========================================================
-CREATE TABLE Transaktion_Wiederkehrend (
+CREATE TABLE Transaktion_Wiederkehrend 
+(
     transaktion_wiederkehrend_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     beschreibung VARCHAR(255) NULL,
