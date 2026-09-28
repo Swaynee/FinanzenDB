@@ -1,0 +1,13 @@
+[v] datenbank anlegen
+[v] datenbank modell überarbeiten/erweitern
+[v] alte datenbank migrieren
+[ ] java backend einrichten
+    [ ] mariadb treiber/verbindung einbauen
+    [ ] datenbank klassen erstellen und auf tabellen mappen
+    [ ] CRUD methoden erstellen und austesten
+    [ ] weitere benötigte methoden und klassen erstellen
+[ ] html/javascript frontend einrichten
+    [ ] konzept planen
+    [ ] websites anlegen
+    [ ] backend verbindung einfügen und testen
+    [ ] javascript und css 
