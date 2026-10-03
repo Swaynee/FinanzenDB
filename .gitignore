@@ -14,4 +14,6 @@ target/
 Thumbs.db
 
 #alte DB migrationsdaten
-/database/migrate.sql
+/backend/database/migrate.sql
+
+backend/target/
