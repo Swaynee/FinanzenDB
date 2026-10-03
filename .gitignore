@@ -6,7 +6,7 @@ target/
 .vscode/
 
 # Lokale Konfiguration
-.env
+backend/.env
 *.local
 
 # Betriebssystem
@@ -16,4 +16,5 @@ Thumbs.db
 #alte DB migrationsdaten
 /backend/database/migrate.sql
 
+#idk
 backend/target/
