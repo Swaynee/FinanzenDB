@@ -11,3 +11,7 @@
     [ ] websites anlegen
     [ ] backend verbindung einfügen und testen
     [ ] javascript und css 
+
+
+set konto id darf nicht so einfach benutzbar sein zb bei update
+fehlerhandling richtig anfangen auf niedrigem level, damit fehler im frontend nachher und logging leicht nachzuvollziehen sind 

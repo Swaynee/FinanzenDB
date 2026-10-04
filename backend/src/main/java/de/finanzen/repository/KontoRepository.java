@@ -48,6 +48,10 @@ public class KontoRepository
         return null;
     }
 
+    /*
+     * Retrieves all active Konto records from the database.
+     * Returns a list of Konto objects. Empty list if no active Konto records are found.
+     */
     public List<Konto> getAlleAktiven() throws SQLException
     {
         String sql = "SELECT ";
@@ -85,15 +89,15 @@ public class KontoRepository
                 }
             }
         }
-        if (konten.isEmpty()) return null;
-        
         System.out.println("KontoRepository: getAlleAktiven: ResultSet retrieved successfully.");
         return konten;
     }
 
     public boolean save(Konto konto) throws SQLException
     {
-        return false; // Implement logic to save Konto to the database
+        //If the konto_id is 0, it means it's a new Konto and should be inserted. Otherwise, it should be updated.
+        if (konto.getId() == 0) return insert(konto);
+        return update(konto);
     }
 
     /*
@@ -101,7 +105,7 @@ public class KontoRepository
      * And sets the generated konto_id in the provided Konto object.
      * Returns true if the insertion was successful, false otherwise.
      */
-    public boolean insert(Konto konto) throws SQLException
+    private boolean insert(Konto konto) throws SQLException
     {
         String sql = "INSERT INTO konto ";
         sql =  sql +    "( ";
@@ -143,10 +147,10 @@ public class KontoRepository
     }
 
 
-    public boolean update(Konto konto) throws SQLException
+    private boolean update(Konto konto) throws SQLException
     {
         String sql = "UPDATE konto ";
-        sql =  sql +    "SET";
+        sql =  sql +    "SET ";
         sql =  sql +        "name       = ?, ";
         sql =  sql +        "konto_art  = ?, ";
         sql =  sql +        "aktiv      = ?, ";
@@ -179,6 +183,17 @@ public class KontoRepository
 
     public boolean delete(Konto konto) throws SQLException
     {
+        konto.setAktiv(false);
+        return update(konto);           
+    }
+
+    /*
+     * Deletes a Konto from the database based on its konto_id.
+     * IMPORTANT: Don't use this method to deactivate a Konto. Use the update method to set the aktiv field to false instead.
+     * Returns true if the deletion was successful, false otherwise.
+     */
+    /* private boolean delete(Konto konto) throws SQLException
+    {
         String sql = "DELETE FROM konto ";
         sql =  sql + "WHERE konto_id = ?";
 
@@ -196,6 +211,6 @@ public class KontoRepository
             System.out.println("KontoRepository: delete: executed successfully.");
             return true;
         }
-    }
+    } */
     
 }

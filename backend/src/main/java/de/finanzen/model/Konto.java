@@ -3,7 +3,7 @@ package de.finanzen.model;
 public class Konto 
 {
     //table columns
-    private int     konto_id;
+    private int     konto_id = 0;
 
     private String  name;
     private String  konto_art;
