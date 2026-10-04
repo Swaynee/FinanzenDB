@@ -33,15 +33,7 @@ public class KontoRepository
                 if (rs.next()) 
                 {
                     System.out.println("KontoRepository: getById: ResultSet retrieved successfully.");
-                    Konto konto = new Konto();
-                    konto.setId(rs.getInt("konto_id"));
-                    konto.setName(rs.getString("name"));
-                    konto.setKontoArt(rs.getString("konto_art"));
-                    konto.setAktiv(rs.getBoolean("aktiv"));
-                    konto.setIban(rs.getString("iban"));
-                    konto.setBic(rs.getString("bic"));
-                    konto.setBank(rs.getString("bank"));
-                    return konto;
+                    return mapResultSetToKonto(rs);
                 }
             }
         }
@@ -75,27 +67,20 @@ public class KontoRepository
             System.out.println("KontoRepository: getAlleAktiven: Query Statement prepared");
             try (ResultSet rs = stmt.executeQuery())
             {
-                while (rs.next()) 
-                {
-                    Konto konto = new Konto();
-                    konto.setId(rs.getInt("konto_id"));
-                    konto.setName(rs.getString("name"));
-                    konto.setKontoArt(rs.getString("konto_art"));
-                    konto.setAktiv(rs.getBoolean("aktiv"));
-                    konto.setIban(rs.getString("iban"));
-                    konto.setBic(rs.getString("bic"));
-                    konto.setBank(rs.getString("bank"));
-                    konten.add(konto);
-                }
+                while (rs.next()) konten.add(mapResultSetToKonto(rs));
             }
         }
         System.out.println("KontoRepository: getAlleAktiven: ResultSet retrieved successfully.");
         return konten;
     }
 
+    /*
+     * Saves a Konto object to the database. If the Konto has an ID of 0, it will be inserted as a new record.
+     * If the Konto has a non-zero ID, it will be updated in the database.
+     * Returns true if the operation was successful, false otherwise.
+     */
     public boolean save(Konto konto) throws SQLException
     {
-        //If the konto_id is 0, it means it's a new Konto and should be inserted. Otherwise, it should be updated.
         if (konto.getId() == 0) return insert(konto);
         return update(konto);
     }
@@ -146,7 +131,10 @@ public class KontoRepository
         return false;
     }
 
-
+    /* 
+     * Updates an existing Konto in the database based on its konto_id.
+     * Returns true if the update was successful, false otherwise.
+     */
     private boolean update(Konto konto) throws SQLException
     {
         String sql = "UPDATE konto ";
@@ -181,6 +169,10 @@ public class KontoRepository
         }
     }
 
+    /*
+     * Deactivates a Konto in the database by setting its aktiv field to false.
+     * Returns true if the operation was successful, false otherwise.
+     */
     public boolean delete(Konto konto) throws SQLException
     {
         konto.setAktiv(false);
@@ -213,4 +205,20 @@ public class KontoRepository
         }
     } */
     
+    /*
+     * Maps the current row of the provided ResultSet to a Konto object.
+     * Assumes that the ResultSet is positioned at a valid row.
+     */
+    private Konto mapResultSetToKonto(ResultSet rs) throws SQLException
+    {
+        Konto konto = new Konto();
+        konto.setId(rs.getInt("konto_id"));
+        konto.setName(rs.getString("name"));
+        konto.setKontoArt(rs.getString("konto_art"));
+        konto.setAktiv(rs.getBoolean("aktiv"));
+        konto.setIban(rs.getString("iban"));
+        konto.setBic(rs.getString("bic"));
+        konto.setBank(rs.getString("bank"));
+        return konto;
+    }
 }
