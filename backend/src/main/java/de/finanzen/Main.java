@@ -3,22 +3,28 @@ package de.finanzen;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.*;
 
 import de.finanzen.database.*;
+import de.finanzen.logging.*;
 import de.finanzen.model.*;
 import de.finanzen.repository.*;
 
 public class Main 
 {
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+
     public static void main(String[] args) 
     {
         try
         {
+            LoggerConfig.setup();
+
             testKontoRepository();
         } 
         catch (Exception e) 
         {
-            System.err.println("Failed to establish database connection: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -27,7 +33,7 @@ public class Main
         KontoRepository kontoRepo = new KontoRepository();
         try 
         {
-            /* Konto konto = kontoRepo.getById(9);
+            Konto konto = kontoRepo.getById(1);
             if (konto != null) 
             {
                 System.out.println("Konto retrieved: " + konto.toString());
@@ -36,7 +42,7 @@ public class Main
             {
                 System.out.println("No Konto found with the given ID.");
             } 
-
+            /*
             List<Konto> aktiveKonten = kontoRepo.getAlleAktiven();
             if (aktiveKonten.isEmpty()) 
             {

@@ -1,6 +1,7 @@
 package de.finanzen.repository;
 
 import java.util.*;
+import java.util.logging.*;
 import java.sql.*;
 
 import de.finanzen.model.*;
@@ -8,6 +9,8 @@ import de.finanzen.database.DatabaseConnection;
 
 public class KontoRepository 
 {
+    private static final Logger LOGGER = Logger.getLogger(KontoRepository.class.getName());
+
     public Konto getById(int konto_id) throws SQLException
     {
         String sql = "SELECT ";
@@ -25,14 +28,14 @@ public class KontoRepository
                 PreparedStatement   stmt    = con.prepareStatement(sql);
             )
         {
-            System.out.println("KontoRepository: getById: Database connection established successfully.");
+            LOGGER.fine("getById: Database connection established successfully.");
             stmt.setInt(1, konto_id);
-            System.out.println("KontoRepository: getById: Query Statement prepared");
+            LOGGER.fine("getById: Query Statement prepared.");
             try (ResultSet rs = stmt.executeQuery())
             {
                 if (rs.next()) 
                 {
-                    System.out.println("KontoRepository: getById: ResultSet retrieved successfully.");
+                    LOGGER.fine("getById: ResultSet retrieved successfully.");
                     return mapResultSetToKonto(rs);
                 }
             }
@@ -63,14 +66,14 @@ public class KontoRepository
                 PreparedStatement   stmt    = con.prepareStatement(sql);
             )
         {
-            System.out.println("KontoRepository: getAlleAktiven: Database connection established successfully.");
-            System.out.println("KontoRepository: getAlleAktiven: Query Statement prepared");
+            LOGGER.fine("getAlleAktiven: Database connection established successfully.");
+            LOGGER.fine("getAlleAktiven: Query Statement prepared,");
             try (ResultSet rs = stmt.executeQuery())
             {
                 while (rs.next()) konten.add(mapResultSetToKonto(rs));
             }
         }
-        System.out.println("KontoRepository: getAlleAktiven: ResultSet retrieved successfully.");
+        LOGGER.fine("getAlleAktiven: ResultSet retrieved successfully.");
         return konten;
     }
 
@@ -107,14 +110,14 @@ public class KontoRepository
                 PreparedStatement   stmt    = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             )
         {
-            System.out.println("KontoRepository: insert: Database connection established successfully.");
+            LOGGER.fine("insert: Database connection established successfully.");
             stmt.setString(1, konto.getName());
             stmt.setString(2, konto.getKontoArt());
             stmt.setBoolean(3,konto.istAktiv());
             stmt.setString(4, konto.getIban());
             stmt.setString(5, konto.getBic());
             stmt.setString(6, konto.getBank());
-            System.out.println("KontoRepository: insert: Query Statement prepared");
+            LOGGER.fine("insert: Query Statement prepared,");
 
             int rc = stmt.executeUpdate();  //enthält die anzahl der betroffenen Zeilen
             if (rc < 1) return false;       //keine Zeilen betroffen, also kein Konto gespeichert
@@ -122,7 +125,7 @@ public class KontoRepository
             {
                 if (rs.next())
                 {
-                    System.out.println("KontoRepository: insert: executed successfully.");
+                    LOGGER.fine("insert: Insert executed successfully.");
                     konto.setId(rs.getInt(1));
                     return true;
                 }
@@ -151,7 +154,7 @@ public class KontoRepository
                 PreparedStatement   stmt    = con.prepareStatement(sql);
             )
         {
-            System.out.println("KontoRepository: update: Database connection established successfully.");
+            LOGGER.fine("update: Database connection established successfully.");
             stmt.setString(1, konto.getName());
             stmt.setString(2, konto.getKontoArt());
             stmt.setBoolean(3,konto.istAktiv());
@@ -159,12 +162,12 @@ public class KontoRepository
             stmt.setString(5, konto.getBic());
             stmt.setString(6, konto.getBank());
             stmt.setInt(7, konto.getId());
-            System.out.println("KontoRepository: update: Query Statement prepared");
+            LOGGER.fine("update: Query Statement prepared,");
 
             int rc = stmt.executeUpdate();  //enthält die anzahl der betroffenen Zeilen
             if (rc < 1) return false;       //keine Zeilen betroffen, also keine Änderungen gespeichert
 
-            System.out.println("KontoRepository: update: executed successfully.");
+            LOGGER.fine("update: Update executed successfully.");
             return true;
         }
     }
@@ -193,14 +196,14 @@ public class KontoRepository
                 PreparedStatement   stmt    = con.prepareStatement(sql);
             )
         {
-            System.out.println("KontoRepository: delete: Database connection established successfully.");
+            LOGGER.fine("delete: Database connection established successfully.");
             stmt.setInt(1, konto.getId());
-            System.out.println("KontoRepository: delete: Query Statement prepared");
+            LOGGER.fine("delete: Query Statement prepared,");
 
             int rc = stmt.executeUpdate();  //enthält die anzahl der betroffenen Zeilen
             if (rc < 1) return false;       //keine Zeilen betroffen, also keine Änderungen gespeichert
 
-            System.out.println("KontoRepository: delete: executed successfully.");
+            LOGGER.fine("delete: Delete executed successfully.");
             return true;
         }
     } */

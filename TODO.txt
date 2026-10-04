@@ -13,5 +13,5 @@
     [ ] javascript und css 
 
 
-set konto id darf nicht so einfach benutzbar sein zb bei update
 fehlerhandling richtig anfangen auf niedrigem level, damit fehler im frontend nachher und logging leicht nachzuvollziehen sind 
+migrierte datensätze bei 1 anfangen, nicht bei 0

@@ -1,5 +1,5 @@
 # Java / Maven
-target/
+backend/target/
 *.class
 
 # VS Code
@@ -16,5 +16,5 @@ Thumbs.db
 #alte DB migrationsdaten
 /backend/database/migrate.sql
 
-#idk
-backend/target/
+#log
+backend/finanzen.log
