@@ -1,11 +1,16 @@
 package de.finanzen.repository;
 
-import java.util.*;
-import java.util.logging.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
-import de.finanzen.model.*;
 import de.finanzen.database.DatabaseConnection;
+import de.finanzen.model.Konto;
 
 public class KontoRepository 
 {
