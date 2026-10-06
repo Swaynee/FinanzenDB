@@ -1,14 +1,10 @@
 package de.finanzen;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.logging.*;
+import java.util.logging.Logger;
 
-import de.finanzen.database.*;
-import de.finanzen.logging.*;
-import de.finanzen.model.*;
-import de.finanzen.repository.*;
+import de.finanzen.logging.LoggerConfig;
+import de.finanzen.model.Konto;
+import de.finanzen.repository.KontoRepository;
 
 public class Main 
 {
