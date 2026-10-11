@@ -36,6 +36,7 @@ public class Konto
     public void setBic(String bic)              { this.bic          = bic;         }
     public void setBank(String bank)            { this.bank         = bank;        }
 
+    @Override
     public String toString() 
     {
         return "Konto [konto_id=" + konto_id + ", name=" + name + ", konto_art=" + konto_art + ", aktiv=" + aktiv + ", iban=" + iban + ", bic=" + bic + ", bank=" + bank + "]";

@@ -17,9 +17,10 @@ public class Transaktionsart
     public String   getName()   { return this.name;                 }
 
     // setters
-    public void setId(int transaktionsart_id)   { this.transaktionsart_id = transaktionsart_id; }
-    public void setName(String name)            { this.name = name;                             }
+    public void setId(int transaktionsart_id)   { this.transaktionsart_id   = transaktionsart_id;   }
+    public void setName(String name)            { this.name                 = name;                 }
 
+    @Override 
     public String toString()
     {
         return "Transaktionsart [transaktionsart_id=" + transaktionsart_id + ", name=" + name + "]";

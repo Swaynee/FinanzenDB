@@ -25,12 +25,13 @@ public class Notiz
     public boolean      istGeloescht()  { return this.geloescht;    }
 
     // setters
-    public void setId(int notiz_id)             { this.notiz_id = notiz_id;     }
-    public void setText(String text)            { this.text = text;             }
-    public void setBetrag(BigDecimal betrag)    { this.betrag = betrag;         }
-    public void setFaellig(String faellig)      { this.faellig = faellig;       }
-    public void setGeloescht(boolean geloescht) { this.geloescht = geloescht;   }
+    public void setId(int notiz_id)             { this.notiz_id     = notiz_id;     }
+    public void setText(String text)            { this.text         = text;         }
+    public void setBetrag(BigDecimal betrag)    { this.betrag       = betrag;       }
+    public void setFaellig(String faellig)      { this.faellig      = faellig;      }
+    public void setGeloescht(boolean geloescht) { this.geloescht    = geloescht;    }
 
+    @Override 
     public String toString() 
     {
         return "Konto [notiz_id=" + notiz_id + ", text=" + text + ", betrag=" + betrag.toString() + ", faellig=" + faellig + ", geloescht=" + geloescht + "]";
