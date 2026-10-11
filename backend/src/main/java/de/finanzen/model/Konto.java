@@ -38,8 +38,7 @@ public class Konto
 
     public String toString() 
     {
-        return "Konto [konto_id=" + konto_id + ", name=" + name + ", konto_art=" + konto_art + ", aktiv=" + aktiv
-                + ", iban=" + iban + ", bic=" + bic + ", bank=" + bank + "]";
+        return "Konto [konto_id=" + konto_id + ", name=" + name + ", konto_art=" + konto_art + ", aktiv=" + aktiv + ", iban=" + iban + ", bic=" + bic + ", bank=" + bank + "]";
     }
     
 }

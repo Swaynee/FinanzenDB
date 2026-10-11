@@ -3,8 +3,8 @@ package de.finanzen.model;
 public class Budget 
 {
     // table columns
-    private int budget_id;
-    private String name;
+    private int     budget_id = 0;
+    private String  name;
 
     // constructors
     public Budget() 
