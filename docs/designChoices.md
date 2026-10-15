@@ -1,4 +1,4 @@
----
+___
 
 ##### **Budget und Konto sind unabhängig**
 
@@ -22,7 +22,7 @@
 - Budgetbuchungen werden unabhängig von den Kontobuchungen verwaltet.
 - Die Auswertung des tatsächlichen Kontostands unterscheidet sich von der Auswertung des verbleibenden Budgets.
 
----
+___
 
 DD-002: Warum die Datenbankzugriffe über Repository-Klassen laufen.
 
