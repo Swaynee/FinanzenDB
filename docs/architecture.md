@@ -28,6 +28,11 @@ Die Datenbankverbindung wird über `DatabaseConnection` bereitgestellt. Der Zugr
 
 Das Logging wird zentral konfiguriert. Die Konfiguration legt unter anderem fest, welche Meldungen in der Konsole und in der Logdatei ausgegeben werden.
 
+Logging über java nativen logger:
+info: erfolgreiche actions
+fine->debugging: informationen wie erfolgreiche datenbankverbindungen, transaktionen
+severe: (unbehandelte) exceptions
+
 ## 4. Konfiguration
 
 Die Datenbankverbindung wird über Umgebungsvariablen konfiguriert. Die lokale `.env`-Datei enthält die Zugangsdaten und wird nicht in das Git-Repository aufgenommen.
