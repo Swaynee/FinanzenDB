@@ -21,6 +21,7 @@ public class BudgetRepository
         String sql = "SELECT ";
         sql =  sql +    "budget_id, ";
         sql =  sql +    "name ";
+        sql =  sql +    "aktiv ";
         sql =  sql + "FROM budget ";
         sql =  sql + "WHERE budget_id = ?";
 
@@ -47,12 +48,14 @@ public class BudgetRepository
      * Retrieves all Budget records from the database.
      * Returns a list of Budget objects. Empty list if no Budget records are found.
      */
-    public List<Budget> getAlle() throws SQLException
+    public List<Budget> getAlleAktiven() throws SQLException
     {
         String sql = "SELECT ";
         sql =  sql +    "budget_id, ";
         sql =  sql +    "name ";
+        sql =  sql +    "aktiv ";
         sql =  sql + "FROM budget";
+        sql =  sql + "WHERE aktiv = 1";
 
         List<Budget> budgets = new ArrayList<>();
 
@@ -91,7 +94,8 @@ public class BudgetRepository
     {
         String sql = "INSERT INTO budget ";
         sql =  sql +    "( ";
-        sql =  sql +        "name ";
+        sql =  sql +        "name, ";
+        sql =  sql +        "aktiv ";
         sql =  sql +    ") ";
         sql =  sql + "VALUES (?)";
 
@@ -128,6 +132,7 @@ public class BudgetRepository
         String sql = "UPDATE budget ";
         sql =  sql +    "SET ";
         sql =  sql +        "name = ? ";
+        sql =  sql +        "aktiv = ?, ";
         sql =  sql + "WHERE budget_id = ?";
 
         try (   Connection          con     = DatabaseConnection.getConnection();
@@ -147,6 +152,16 @@ public class BudgetRepository
         }
     }
 
+        /*
+     * Deactivates a Budget in the database by setting its aktiv field to false.
+     * Returns true if the operation was successful, false otherwise.
+     */
+    public boolean delete(Budget budget) throws SQLException
+    {
+        budget.setAktiv(false);
+        return update(budget);
+    }
+
     /*
      * Maps the current row of the provided ResultSet to a Budget object.
      * Assumes that the ResultSet is positioned at a valid row.
@@ -156,6 +171,7 @@ public class BudgetRepository
         Budget budget = new Budget();
         budget.setId(rs.getInt("budget_id"));
         budget.setName(rs.getString("name"));
+        budget.setAktiv(rs.getBoolean("aktiv"));
         return budget;
     }
 }
