@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.finanzen.database.DatabaseConnection;
@@ -29,14 +30,14 @@ public class BudgetRepository
                 PreparedStatement   stmt    = con.prepareStatement(sql);
             )
         {
-            LOGGER.fine("getById: Database connection established successfully.");
+            LOGGER.log(Level.FINE,"getById: Database connection established successfully.");
             stmt.setInt(1, budget_id);
-            LOGGER.fine("getById: Query Statement prepared.");
+            LOGGER.log(Level.FINE,"getById: Query Statement prepared.");
             try (ResultSet rs = stmt.executeQuery())
             {
                 if (rs.next()) 
                 {
-                    LOGGER.fine("getById: ResultSet retrieved successfully.");
+                    LOGGER.log(Level.FINE,"getById: ResultSet retrieved successfully.");
                     return mapResultSetToBudget(rs);
                 }
             }
@@ -63,14 +64,14 @@ public class BudgetRepository
                 PreparedStatement   stmt    = con.prepareStatement(sql);
             )
         {
-            LOGGER.fine("getAlle: Database connection established successfully.");
-            LOGGER.fine("getAlle: Query Statement prepared.");
+            LOGGER.log(Level.FINE,"getAlle: Database connection established successfully.");
+            LOGGER.log(Level.FINE,"getAlle: Query Statement prepared.");
             try (ResultSet rs = stmt.executeQuery())
             {
                 while (rs.next()) budgets.add(mapResultSetToBudget(rs));
             }
         }
-        LOGGER.fine("getAlle: ResultSet retrieved successfully.");
+        LOGGER.log(Level.FINE,"getAlle: ResultSet retrieved successfully.");
         return budgets;
     }
 
@@ -103,9 +104,9 @@ public class BudgetRepository
                 PreparedStatement   stmt    = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             )
         {
-            LOGGER.fine("insert: Database connection established successfully.");
+            LOGGER.log(Level.FINE,"insert: Database connection established successfully.");
             stmt.setString(1, budget.getName());
-            LOGGER.fine("insert: Query Statement prepared.");
+            LOGGER.log(Level.FINE,"insert: Query Statement prepared.");
 
             int rc = stmt.executeUpdate();  // enthält die Anzahl der betroffenen Zeilen
             if (rc < 1) return false;       // keine Zeilen betroffen, also kein Budget gespeichert
@@ -114,7 +115,7 @@ public class BudgetRepository
             {
                 if (rs.next())
                 {
-                    LOGGER.fine("insert: Insert executed successfully.");
+                    LOGGER.log(Level.FINE,"insert: Insert executed successfully.");
                     budget.setId(rs.getInt(1));
                     return true;
                 }
@@ -139,15 +140,15 @@ public class BudgetRepository
                 PreparedStatement   stmt    = con.prepareStatement(sql);
             )
         {
-            LOGGER.fine("update: Database connection established successfully.");
+            LOGGER.log(Level.FINE,"update: Database connection established successfully.");
             stmt.setString(1, budget.getName());
             stmt.setInt(2, budget.getId());
-            LOGGER.fine("update: Query Statement prepared.");
+            LOGGER.log(Level.FINE,"update: Query Statement prepared.");
 
             int rc = stmt.executeUpdate();  // enthält die Anzahl der betroffenen Zeilen
             if (rc < 1) return false;       // keine Zeilen betroffen, also keine Änderungen gespeichert
 
-            LOGGER.fine("update: Update executed successfully.");
+            LOGGER.log(Level.FINE,"update: Update executed successfully.");
             return true;
         }
     }
