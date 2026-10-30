@@ -16,9 +16,15 @@ import de.finanzen.model.BudgetBuchung;
 public class BudgetBuchungRepository
 {
     private static final Logger         LOGGER                  = Logger.getLogger(BudgetBuchungRepository.class.getName());
-    private final TransaktionRepository transaktionRepository   = new TransaktionRepository();
-    private final BudgetRepository      budgetRepository        = new BudgetRepository();
+    private final TransaktionRepository transaktionRepository;
+    private final BudgetRepository      budgetRepository;
 
+    public BudgetBuchungRepository(TransaktionRepository transaktionRepository, BudgetRepository budgetRepository)
+    {
+        this.transaktionRepository  = transaktionRepository;
+        this.budgetRepository       = budgetRepository;
+    }
+    
     public BudgetBuchung getById(long budget_buchung_id) throws SQLException
     {
         String sql = "SELECT ";

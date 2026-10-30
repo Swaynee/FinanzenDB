@@ -16,8 +16,14 @@ import de.finanzen.model.Buchung;
 public class BuchungRepository
 {
     private static final Logger         LOGGER                  = Logger.getLogger(BuchungRepository.class.getName());   
-    private final TransaktionRepository transaktionRepository   = new TransaktionRepository();
-    private final KontoRepository       kontoRepository         = new KontoRepository();
+    private final TransaktionRepository transaktionRepository;
+    private final KontoRepository       kontoRepository;
+
+    public BuchungRepository(TransaktionRepository transaktionRepository, KontoRepository kontoRepository) 
+    {
+        this.transaktionRepository  = transaktionRepository;
+        this.kontoRepository        = kontoRepository;
+    }
 
     public Buchung getById(long buchung_id) throws SQLException
     {

@@ -15,9 +15,13 @@ import de.finanzen.model.Transaktion;
 
 public class TransaktionRepository
 {
-    private static final Logger LOGGER = Logger.getLogger(TransaktionRepository.class.getName());
+    private static final Logger                 LOGGER = Logger.getLogger(TransaktionRepository.class.getName());
+    private final TransaktionsartRepository     transaktionsartRepository;
 
-    private final TransaktionsartRepository transaktionsartRepository = new TransaktionsartRepository();
+    public TransaktionRepository (TransaktionsartRepository transaktionsartRepository)
+    {
+        this.transaktionsartRepository = transaktionsartRepository;
+    }
 
     public Transaktion getById(long transaktion_id) throws SQLException
     {

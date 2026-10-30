@@ -10,7 +10,7 @@ import de.finanzen.repository.TransaktionsartRepository;
 
 public class TransaktionsartService
 {
-    private static final Logger                 LOGGER = Logger.getLogger(KontoService.class.getName());
+    private static final Logger                 LOGGER = Logger.getLogger(TransaktionsartService.class.getName());
     private final TransaktionsartRepository     transaktionsartRepository;
 
     public TransaktionsartService(TransaktionsartRepository transaktionsartRepository)
@@ -19,7 +19,7 @@ public class TransaktionsartService
     }
 
     /*
-     * Gibt alle aktiven Konten zurück.
+     * Gibt alle Transaktionsarten zurück.
      */
     public List<Transaktionsart> getAlle() throws SQLException
     {
@@ -58,7 +58,7 @@ public class TransaktionsartService
     {
         validiere(transaktionsart);
 
-        if (transaktionsart.getId() <= 0) throw new IllegalArgumentException("Das Konto besitzt keine gültige ID.");
+        if (transaktionsart.getId() <= 0) throw new IllegalArgumentException("Die Transaktionsart besitzt keine gültige ID.");
 
         Transaktionsart vorhanden = transaktionsartRepository.getById(transaktionsart.getId());
         if (vorhanden == null) return false;
@@ -69,7 +69,7 @@ public class TransaktionsartService
     }
 
     /*
-     * Prüft die fachlich erforderlichen Kontodaten.
+     * Prüft die fachlich erforderlichen Transaktionsartdaten.
      */
     private void validiere(Transaktionsart transaktionsart)
     {

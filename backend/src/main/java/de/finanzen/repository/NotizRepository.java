@@ -165,6 +165,16 @@ public class NotizRepository
     }
 
     /*
+     * Deactivates a Notiz in the database by setting its geloescht field to true.
+     * Returns true if the operation was successful, false otherwise.
+    */
+    public boolean delete(Notiz notiz) throws SQLException
+    {
+        notiz.setGeloescht(true);
+        return update(notiz);           
+    }
+
+    /*
      * Maps the current ResultSet row to a Notiz object.
      */
     private Notiz mapResultSetToNotiz(ResultSet rs) throws SQLException
