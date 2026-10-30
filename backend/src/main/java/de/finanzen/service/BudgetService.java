@@ -32,7 +32,7 @@ public class BudgetService
      */
     public Budget getById(int budget_id) throws SQLException
     {
-        if (budget_id <= 0)                                                          throw new IllegalArgumentException("Die Budget-ID muss größer als 0 sein.");
+        if (budget_id <= 0) throw new IllegalArgumentException("Die Budget-ID muss größer als 0 sein.");
         return budgetRepository.getById(budget_id);
     }
 
@@ -44,7 +44,7 @@ public class BudgetService
     {
         validiere(budget);
 
-        if (budget.getId() != 0)                                                     throw new IllegalArgumentException("Ein neues Budget darf noch keine ID besitzen.");
+        if (budget.getId() != 0) throw new IllegalArgumentException("Ein neues Budget darf noch keine ID besitzen.");
 
         boolean erfolgreich = budgetRepository.save(budget);
         if (erfolgreich) LOGGER.info("Budget erstellt: " + budget.getId());
@@ -58,7 +58,7 @@ public class BudgetService
     {
         validiere(budget);
 
-        if (budget.getId() <= 0)                                                     throw new IllegalArgumentException("Das Budget besitzt keine gültige ID.");
+        if (budget.getId() <= 0) throw new IllegalArgumentException("Das Budget besitzt keine gültige ID.");
 
         Budget vorhanden = budgetRepository.getById(budget.getId());
         if (vorhanden == null) return false;
@@ -88,7 +88,7 @@ public class BudgetService
      */
     private void validiere(Budget budget)
     {
-        if (budget == null)                                                          throw new IllegalArgumentException("Das Budget darf nicht null sein.");
-        if (budget.getName() == null || budget.getName().trim().isEmpty())           throw new IllegalArgumentException("Der Budgetname darf nicht leer sein.");
+        if (budget == null)                                                 throw new IllegalArgumentException("Das Budget darf nicht null sein.");
+        if (budget.getName() == null || budget.getName().trim().isEmpty())  throw new IllegalArgumentException("Der Budgetname darf nicht leer sein.");
     }
 }

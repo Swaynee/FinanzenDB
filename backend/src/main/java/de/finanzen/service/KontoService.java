@@ -32,7 +32,7 @@ public class KontoService
      */
     public Konto getById(int konto_id) throws SQLException
     {
-        if (konto_id <= 0)                                                          throw new IllegalArgumentException("Die Konto-ID muss größer als 0 sein.");
+        if (konto_id <= 0) throw new IllegalArgumentException("Die Konto-ID muss größer als 0 sein.");
         return kontoRepository.getById(konto_id);
     }
 
@@ -44,7 +44,7 @@ public class KontoService
     {
         validiere(konto);
 
-        if (konto.getId() != 0)                                                     throw new IllegalArgumentException("Ein neues Konto darf noch keine ID besitzen.");
+        if (konto.getId() != 0) throw new IllegalArgumentException("Ein neues Konto darf noch keine ID besitzen.");
 
         boolean erfolgreich = kontoRepository.save(konto);
         if (erfolgreich) LOGGER.info("Konto erstellt: " + konto.getId());
@@ -58,7 +58,7 @@ public class KontoService
     {
         validiere(konto);
 
-        if (konto.getId() <= 0)                                                     throw new IllegalArgumentException("Das Konto besitzt keine gültige ID.");
+        if (konto.getId() <= 0) throw new IllegalArgumentException("Das Konto besitzt keine gültige ID.");
 
         Konto vorhanden = kontoRepository.getById(konto.getId());
         if (vorhanden == null) return false;
