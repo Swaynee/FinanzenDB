@@ -1,5 +1,8 @@
 package de.finanzen;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.finanzen.logging.LoggerConfig;
@@ -18,9 +21,9 @@ public class Main
 
             testKontoRepository();
         } 
-        catch (Exception e) 
+        catch (IOException e) 
         {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE,"Exception: {0}",e.getMessage());
         }
     }
 
@@ -90,7 +93,7 @@ public class Main
             } */
 
         } 
-        catch (Exception e) 
+        catch (SQLException e) 
         {
             System.err.println("Error retrieving Konto: " + e.getMessage());
         }

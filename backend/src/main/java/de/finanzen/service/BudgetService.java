@@ -3,6 +3,7 @@ package de.finanzen.service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.finanzen.model.Budget;
@@ -40,6 +41,7 @@ public class BudgetService
      * Erstellt ein neues Budget.
      * Das Budget darf noch keine ID besitzen.
      */
+    @SuppressWarnings("LoggerStringConcat")
     public boolean erstelle(Budget budget) throws SQLException
     {
         validiere(budget);
@@ -64,7 +66,7 @@ public class BudgetService
         if (vorhanden == null) return false;
 
         boolean erfolgreich = budgetRepository.save(budget);
-        if (erfolgreich) LOGGER.info("Budget aktualisiert: " + budget.getId());
+        if (erfolgreich) LOGGER.log(Level.INFO, "Budget aktualisiert: {0}", budget.getId());
         return erfolgreich;
     }
 
@@ -79,7 +81,7 @@ public class BudgetService
         if (!budget.istAktiv()) return false;
 
         boolean erfolgreich = budgetRepository.delete(budget);
-        if (erfolgreich) LOGGER.info("Budget deaktiviert: " + budget_id);
+        if (erfolgreich) LOGGER.log(Level.INFO, "Budget deaktiviert: {0}", budget_id);
         return erfolgreich;
     }
 

@@ -3,6 +3,7 @@ package de.finanzen.service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.finanzen.model.Transaktionsart;
@@ -47,7 +48,7 @@ public class TransaktionsartService
         if (transaktionsart.getId() != 0) throw new IllegalArgumentException("Eine neue Transaktionsart darf noch keine ID besitzen.");
 
         boolean erfolgreich = transaktionsartRepository.save(transaktionsart);
-        if (erfolgreich) LOGGER.info("Transaktionsart erstellt: " + transaktionsart.getId());
+        if (erfolgreich) LOGGER.log(Level.INFO, "Transaktionsart erstellt: {0}", transaktionsart.getId());
         return erfolgreich;
     }
 
@@ -64,7 +65,7 @@ public class TransaktionsartService
         if (vorhanden == null) return false;
 
         boolean erfolgreich = transaktionsartRepository.save(transaktionsart);
-        if (erfolgreich) LOGGER.info("Transaktionsart aktualisiert: " + transaktionsart.getId());
+        if (erfolgreich) LOGGER.log(Level.INFO, "Transaktionsart aktualisiert: {0}", transaktionsart.getId());
         return erfolgreich;
     }
 

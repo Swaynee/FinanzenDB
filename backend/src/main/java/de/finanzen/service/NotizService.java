@@ -2,6 +2,7 @@ package de.finanzen.service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.finanzen.model.Notiz;
@@ -39,6 +40,7 @@ public class NotizService
      * Erstellt eine neue Notiz.
      * Die Notiz darf noch keine ID besitzen.
      */
+    @SuppressWarnings("LoggerStringConcat")
     public boolean erstelle(Notiz notiz) throws SQLException
     {
         validiere(notiz);
@@ -64,7 +66,7 @@ public class NotizService
         if (vorhanden == null) return false;
 
         boolean erfolgreich = notizRepository.save(notiz);
-        if (erfolgreich) LOGGER.info("Notiz aktualisiert: " + notiz.getId());
+        if (erfolgreich) LOGGER.log(Level.INFO, "Notiz aktualisiert: {0}", notiz.getId());
         return erfolgreich;
     }
 
@@ -78,7 +80,7 @@ public class NotizService
         if (notiz.istGeloescht()) return false;
 
         boolean erfolgreich = notizRepository.delete(notiz);
-        if (erfolgreich) LOGGER.info("Notiz gelöscht: " + notiz.getId());
+        if (erfolgreich) LOGGER.log(Level.INFO, "Notiz geloescht: {0}", notiz.getId());
         return erfolgreich;
     }
 

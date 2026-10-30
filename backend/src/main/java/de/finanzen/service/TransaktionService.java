@@ -2,6 +2,7 @@ package de.finanzen.service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.finanzen.model.Transaktion;
@@ -50,7 +51,7 @@ public class TransaktionService
         if (transaktion.getId() != 0) throw new IllegalArgumentException("Eine neue Transaktion darf noch keine ID besitzen.");
 
         boolean erfolgreich = transaktionRepository.save(transaktion);
-        if (erfolgreich) LOGGER.info("Transaktion erstellt: " + transaktion.getId());
+        if (erfolgreich) LOGGER.log(Level.INFO, "Transaktion erstellt: {0}", transaktion.getId());
         return erfolgreich;
     }
 
@@ -67,7 +68,7 @@ public class TransaktionService
         if (vorhanden == null) return false;
 
         boolean erfolgreich = transaktionRepository.save(transaktion);
-        if (erfolgreich) LOGGER.info("Transaktion aktualisiert: " + transaktion.getId());
+        if (erfolgreich) LOGGER.log(Level.INFO, "Transaktion aktualisiert: {0}", transaktion.getId());
         return erfolgreich;
     }
 
@@ -82,7 +83,7 @@ public class TransaktionService
         if (transaktion == null) return false;
 
         boolean erfolgreich = transaktionRepository.delete(transaktion);
-        if (erfolgreich) LOGGER.info("Transaktion gelöscht: " + transaktion_id);
+        if (erfolgreich) LOGGER.log(Level.INFO, "Transaktion gel\u00f6scht: {0}", transaktion_id);
         return erfolgreich;
     }
 

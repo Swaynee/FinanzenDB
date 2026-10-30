@@ -3,6 +3,7 @@ package de.finanzen.service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.finanzen.model.Konto;
@@ -47,7 +48,7 @@ public class KontoService
         if (konto.getId() != 0) throw new IllegalArgumentException("Ein neues Konto darf noch keine ID besitzen.");
 
         boolean erfolgreich = kontoRepository.save(konto);
-        if (erfolgreich) LOGGER.info("Konto erstellt: " + konto.getId());
+        if (erfolgreich) LOGGER.log(Level.INFO, "Konto erstellt: {0}", konto.getId());
         return erfolgreich;
     }
 
@@ -64,7 +65,7 @@ public class KontoService
         if (vorhanden == null) return false;
 
         boolean erfolgreich = kontoRepository.save(konto);
-        if (erfolgreich) LOGGER.info("Konto aktualisiert: " + konto.getId());
+        if (erfolgreich) LOGGER.log(Level.INFO, "Konto aktualisiert: {0}", konto.getId());
         return erfolgreich;
     }
 
@@ -79,7 +80,7 @@ public class KontoService
         if (!konto.istAktiv()) return false;
 
         boolean erfolgreich = kontoRepository.delete(konto);
-        if (erfolgreich) LOGGER.info("Konto deaktiviert: " + konto_id);
+        if (erfolgreich) LOGGER.log(Level.INFO, "Konto deaktiviert: {0}", konto_id);
         return erfolgreich;
     }
 
