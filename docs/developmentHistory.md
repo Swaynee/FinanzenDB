@@ -2,7 +2,16 @@
 
 ## 1. Ausgangssituation
 
-Die bisherige Finanzverwaltung basierte auf OpenOffice Base. Ziel war es, die bestehende Lösung durch eine eigenständig entwickelte Anwendung mit einer relationalen Datenbank und einem Java-Backend zu ersetzen.
+Bevor ich die Idee für dieses Projekt hatte, habe ich den Überblick über meine Finanzen mithilfe von einfachen (open office calc) spreadsheets behalten. Ich habe jedes Jahr versucht das spreadsheet des Vorjahrs zu verbessern, um eine möglichst genaue und einfache Pflege meiner Daten zu ermöglichen. Nachdem ich meine Ausbildung als Fachinformatiker Anwendungsentwicklung angefangen habe und Erfahrung im Programmieren und mit relationalen Datenbanksystemen gesammelt habe, ist mir klar geworden, dass eine kleine private Datenbank eine genauere und verlässlichere Methode darstellt, meine Daten zu verwalten.
+
+Nachdem meine Anforderungen sehr gering waren, war ich mir sicher dass eine einfache Open Office Base Datenbank ausreichen würde. Ich habe mir ein einfaches RDM (relationales Datenmodell) zusammengestellt basierend auf
+meinen bisherigen Bedürfnissen. Ich hatte zu diesem Zeitpunkt schon einige Erfahrung mit SQL in meiner Arbeitsstelle gesammelt und hatte mich darauf gefreut, meine Finanzdaten nach belieben zu selektieren, um
+meine Ausgaben und Einnahmen anschaulich zu kategorisieren und zu analysieren. Ich hab das schnell herausgefunden, dass das SQL der integrierten Base Datenbank (HSQLDB) und auch die grafischen Oberflächen, die man in Base zusammenstellen kann, sehr gewöhnungsbedürftig, fehleranfällig und einfach anstrengend sind. Ich hab dann ein einfaches Eingabeformular für Transaktionen zusammengestellt, damit ich es zumindest benutzen kann.
+Im Laufe des Jahres, in dem ich diese DB (Datenbank) benutzt habe, ist mir immer mehr aufgefallen, wie benutzerunfreundlich dieses Programm ist. Ich habe auch einige Makros verwendet (Apache OpenOffice Basic), was auch nicht angenehm war (veraltete Sprache).
+
+Zum aktuellen Zeitpunkt befinde ich mich kurz vor dem Ende meiner Ausbildung und habe jetzt schon eine wesentlich besssere Vorstellung von Datenbanken, Java (JDBC) und Webdevelopment (Javascript, HTML, CSS). Aufgrunddessen habe ich mich dazu entschieden, ein größeres Projekt aus meiner nächsten Iteration einer Datenbank zu machen.
+Von meiner Arbeit mit Intersystems Objectscript im Backend und Java Servlets/JSPs im Frontend auf meiner Arbeitsstelle habe ich mich inspirieren lassen, ein ähnliches Konzept zu verfolgen. In der Berufsschule haben wir
+hauptsächlich mit MariaDB (MySQL) und auch Java gearbeitet. Meine Idee war deshalb beide Welten zu vereinen, indem ich mich bei meinem Backend am Intersystems Objectscript Konzept zu orientieren und Java Klassen zu benutzen, welche ich als Tabellen in MariaDB abbilde, sodass ich in Java programmieren kann und auf die Datenbank zugreifen kann, wie man es aus Intersystems Objectscript kennt.
 
 ## 2. Konzeption und Datenmodell
 
