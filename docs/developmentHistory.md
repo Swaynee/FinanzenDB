@@ -15,7 +15,17 @@ hauptsächlich mit MariaDB (MySQL) und auch Java gearbeitet. Meine Idee war desh
 
 ## 2. Konzeption und Datenmodell
 
-Zu Beginn wurden die fachlichen Anforderungen und die Datenstruktur festgelegt. Dabei wurden insbesondere die Trennung von Konten und Budgets sowie die Unterscheidung zwischen Transaktionen und den daraus entstehenden Buchungen berücksichtigt.
+Beim Modellieren der Datenbank stand ich vor der Entscheidung, ob das System ähnlich zur doppelten Buchhaltung funktionieren sollte oder eher nach einem Cash-Stuffing Ansatz. Die doppelte Buchhaltung hätte verschiedene (virtuelle) Konten erstellt und dann würde jede Transaktion als eine Buchung zwischen zwei Konten abgebildet werden, wobei solche Konten die tatsächliches Eigentum abbilden also Aktivkonten sind und solche die Schulden abbilden (also woher das Geld stammt) als Passivkonten. Dementsprechend wäre dann jede Transaktion eine Buchung nach dem Soll an Haben Schema. Dies hätte natürlich die Vorteile von sehr genauen und nachvollziehbaren Kontobewegungen und man könnte eine tatsächliche buchhalterische Bilanz am Ende jeden Jahres machen. Im Vergleich dazu stand das Cash-Stuffing Modell, in dem man im Prinzip Geld in digitale "Geldumschläge" steckt (budgets), um so Einnahmen und variable Ausgaben zu planen.
+Meine persönliche Entscheidung ist auf das Cash-Stuffing Modell gefallen, weil es mir dort einfach fällt 1. unbeabsichtigt Schulden aufzubauen 2. ich sehe klar wie viel Geld ich in einem Monat "übrig" habe.
+Natürlich benutze ich dafür keine echten Bargeldumschläge, sondern es sind digitale budgets, gleichzeitig mochte ich die Möglichkeit meine tatsächlichen Kontostände abbilden- und später abgleichen zu können. Das ist der Grund warum ich auch meine tatsächlichen Konten (+Bargeld Konto) abbilde. 
+Durch diese zweispurige Betrachtungsweise der Finanzen, habe ich mich dazu entschieden, Transaktionen in zwei paralellen Tabellen zu betrachten: Buchungen für die tatsächlich stattgefundenen Kontobewegungen, wie man sie auf seinem Kontoauszug sehen würde und Budget-Buchungen, welche die gleichzeitige Verwaltung dieses Betrags einer beliebigen Transaktion auch auf der virtuellen Budget Ebene verwaltet
+
+> z.B. ein 10€ Einkauf bei Lidl, bei dem 70% mit Bargeld bezahlt wird und der Rest mit EC Karte
+> es würde eine Transaktion entstehen, welche zwei Buchungen erzeugt (-7€ auf Bargeld und -3€ auf Girokonto)
+> außerdem eine Budget-Buchung über -10€ vom Budget z.B. "Lebensmittel" oder "Einkauf"
+
+Nach dieser Idee modelliere ich das Backend. Im Frontend ist das Ziel eine einfache und intuitive Eingabe, welche Transaktionen und entsprechend zugehörige Buchungen konsistent speichert und etwaige Sicherheitsprüfungen
+sorgfältig durchführt und gegebenenfalls den Benutzer bei Fehlnutzung informiert.
 
 ## 3. Datenbank und Migration
 
