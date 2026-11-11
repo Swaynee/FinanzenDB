@@ -29,15 +29,18 @@ sorgfältig durchführt und gegebenenfalls den Benutzer bei Fehlnutzung informie
 
 ## 3. Datenbank und Migration
 
-Die Datenbankstruktur wurde in SQL definiert. Anschließend wurde die Migration der bestehenden Daten vorbereitet und an die neue Struktur angepasst.
+Beim Umsteigen von der Open Office Base HSQLDB Datenbank habe ich mir überlegt was an der Datenbank verbessert werden sollte. Ich wollte bei dem Cash-Stuffing Modell bleiben, daher habe ich die Datenbank nicht grundsätzlich über den Haufen geworfen. Ich habe die klare Abgrenzung zwischen Buchungen und Budget-Buchungen erweitert, indem ich die Budget Buchung Tabelle als eigenständigen Teil einer Transaktion behandle. Außerdem habe ich bei wiederkehrenden Transaktionen ein Feld hinzugefügt, um zu differenzieren, wann eine Transaktion stattfindet vs. für welchen Monat sie gilt.
 
-Ein besonderes Problem war die Übernahme vorhandener IDs, da die ID `0` im Java-Projekt als Kennzeichnung eines noch nicht gespeicherten Objekts verwendet wird.
+> Beispielsweise Gehalt welches am Monatsende auf dem Girokonto eingeht, aber natürlich lebt man von diesem Geld im Folgemonat 
+> oder eine Stromabschlagsrechnung die vielleicht erst am ersten des Monats abgebucht wird, aber im nachhinnein für den vergangenen Monat berechnet wird 
+
+Abgesehen davon wurde nicht viel verändert, wodurch die Migration meiner bisherigen Finanzdaten (aus 2026) relativ problemlos verlief. Die Anpassungen beliefen sich darauf, dass meine bisherigen Datensätze mit der ID bei 0 angefangen haben, das habe ich geändert, sodass die Datensätze stattdessen mit 1 beginnen. Die 0 soll im Java-Projekt dafür benutzt werden um zu kennzeichnen, dass es ein Objekt/Datensatz noch ich gibt. Außerdem habe ich für budget Bewegungen im alten System, jeweils eigene Transaktionen erzeugt, damit sie ins neue System passen.
 
 ## 4. Einrichtung des Java-Backends
 
-Das Backend wurde als Maven-Projekt eingerichtet. Die Java-Pakete wurden strukturiert und die Verbindung zur MariaDB-Datenbank über JDBC implementiert.
+Das Backend wurde als Maven-Projekt eingerichtet. Die Java-Pakete wurden strukturiert und die Verbindung zur MariaDB-Datenbank über JDBC implementiert. Abgesehen von dem Maven Grundgerüst, will ich so wenig frameworks wie möglich benutzen. Ich möchte meine Kentnisse der zugrundeliegenden Techniken verbessern und möglichst viel händisch machen, um möglichst viel Kontrolle und Verständnis über das Programm zu haben.
 
-Die Konfiguration der Zugangsdaten wurde von den eigentlichen Quellcodedateien getrennt.
+Die Konfiguration der Zugangsdaten für die Datenbank wurde von den eigentlichen Quellcodedateien ausgelagert.
 
 ## 5. Modell- und Repository-Klassen
 
