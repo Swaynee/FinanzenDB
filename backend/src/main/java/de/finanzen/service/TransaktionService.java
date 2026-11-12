@@ -6,20 +6,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.finanzen.model.Transaktion;
-import de.finanzen.model.Transaktionsart;
 import de.finanzen.repository.TransaktionRepository;
-import de.finanzen.repository.TransaktionsartRepository;
 
 public class TransaktionService
 {
     private static final Logger             LOGGER = Logger.getLogger(TransaktionService.class.getName());
     private final TransaktionRepository     transaktionRepository;
-    private final TransaktionsartRepository transaktionsartRepository;
 
-    public TransaktionService(TransaktionRepository transaktionRepository, TransaktionsartRepository transaktionsartRepository)
+    public TransaktionService(TransaktionRepository transaktionRepository)
     {
-        this.transaktionRepository      = transaktionRepository;
-        this.transaktionsartRepository   = transaktionsartRepository;
+        this.transaktionRepository = transaktionRepository;
     }
 
     /*
@@ -93,14 +89,10 @@ public class TransaktionService
     private void validiere(Transaktion transaktion) throws SQLException
     {
         if (transaktion == null)                                                                        throw new IllegalArgumentException("Die Transaktion darf nicht null sein.");
-        if (transaktion.getTransaktionsart() == null)                                                   throw new IllegalArgumentException("Die Transaktion benötigt eine Transaktionsart.");
-
-        Transaktionsart transaktionsart = transaktion.getTransaktionsart();
-        if (transaktionsart.getId() <= 0)                                                               throw new IllegalArgumentException("Die Transaktionsart besitzt keine gültige ID.");
-        if (transaktionsartRepository.getById(transaktionsart.getId()) == null)                         throw new IllegalArgumentException("Die angegebene Transaktionsart existiert nicht.");
-
         if (transaktion.getDatum() == null)                                                             throw new IllegalArgumentException("Das Transaktionsdatum darf nicht leer sein.");
         if (transaktion.getPlanungsmonat() == null)                                                     throw new IllegalArgumentException("Der Transaktionsplanungsmonat darf nicht leer sein.");
         if (transaktion.getBeschreibung() == null || transaktion.getBeschreibung().trim().isEmpty())    throw new IllegalArgumentException("Der Transaktionsbeschreibung darf nicht leer sein.");
+    
+        if (transaktion.getTransaktionsart() == null)                                                   throw new IllegalArgumentException("Die Transaktion benötigt eine Transaktionsart.");
     }
 }
