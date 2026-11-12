@@ -14,17 +14,10 @@ public class BuchungService
 {
     private static final Logger             LOGGER = Logger.getLogger(BuchungService.class.getName());
     private final BuchungRepository         buchungRepository;
-    private final KontoService              kontoService;
-    private final TransaktionService        transaktionService;
-    private final TransaktionsartService    transaktionsartService;
 
-
-    public BuchungService(BuchungRepository buchungRepository, KontoService kontoService, TransaktionService transaktionService,  TransaktionsartService transaktionsartService)
+    public BuchungService(BuchungRepository buchungRepository)
     {
         this.buchungRepository          = buchungRepository;
-        this.kontoService               = kontoService;
-        this.transaktionService         = transaktionService;
-        this.transaktionsartService     = transaktionsartService;
     }
 
     /*
