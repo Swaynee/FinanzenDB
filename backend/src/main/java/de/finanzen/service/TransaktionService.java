@@ -56,9 +56,9 @@ public class TransaktionService
      */
     public boolean aktualisiere(Transaktion transaktion) throws SQLException
     {
-        if (transaktion.getId() <= 0) throw new IllegalArgumentException("Die Transaktion besitzt keine gültige ID.");
-
         validiere(transaktion);
+
+        if (transaktion.getId() <= 0) throw new IllegalArgumentException("Die Transaktion besitzt keine gültige ID.");
 
         Transaktion vorhanden = transaktionRepository.getById(transaktion.getId());
         if (vorhanden == null) return false;
