@@ -20,28 +20,17 @@ public class BuchungService
         this.buchungRepository          = buchungRepository;
     }
 
-    /*
-     * Gibt alle Buchungen zurück.
-     */
     public List<Buchung> getAlle() throws SQLException
     {
         return buchungRepository.getAlle();
     }
 
-    /*
-     * Sucht eine Buchung anhand ihrer ID.
-     * Gibt null zurück, wenn keine Buchung gefunden wurde.
-     */
     public Buchung getById(long buchung_id) throws SQLException
     {
         if (buchung_id <= 0) throw new IllegalArgumentException("Die Buchung-ID muss größer als 0 sein.");
         return buchungRepository.getById(buchung_id);
     }
 
-    /*
-     * Erstellt eine neue Buchung.
-     * Die Buchung darf noch keine ID besitzen.
-     */
     public boolean erstelle(Buchung buchung) throws SQLException
     {
         validiere(buchung);
@@ -56,9 +45,6 @@ public class BuchungService
         return erfolgreich;
     }
 
-    /*
-     * Aktualisiert eine bestehende Buchung.
-     */
     public boolean aktualisiere(Buchung buchung) throws SQLException
     {
         if (buchung.getId() <= 0) throw new IllegalArgumentException("Die Buchung besitzt keine gültige ID.");
@@ -76,9 +62,6 @@ public class BuchungService
         return erfolgreich;
     }
 
-    /*
-     * Löscht eine Buchung aus der Datenbank.
-     */
     public boolean loesche(long buchung_id) throws SQLException
     {
         Buchung buchung = getById(buchung_id);
@@ -89,9 +72,6 @@ public class BuchungService
         return erfolgreich;
     }
 
-    /*
-     * Prüft die fachlich erforderlichen Buchungdaten.
-     */
     private void validiere(Buchung buchung) throws SQLException
     {
         if (buchung == null)                                                                        throw new IllegalArgumentException("Die Buchung darf nicht null sein.");

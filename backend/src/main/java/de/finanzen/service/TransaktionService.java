@@ -18,28 +18,18 @@ public class TransaktionService
         this.transaktionRepository = transaktionRepository;
     }
 
-    /*
-     * Gibt alle Transaktionen zurück.
-     */
+
     public List<Transaktion> getAlle() throws SQLException
     {
         return transaktionRepository.getAlle();
     }
 
-    /*
-     * Sucht eine Transaktion anhand ihrer ID.
-     * Gibt null zurück, wenn keine Transaktion gefunden wurde.
-     */
     public Transaktion getById(long transaktion_id) throws SQLException
     {
         if (transaktion_id <= 0) throw new IllegalArgumentException("Die Transaktion-ID muss größer als 0 sein.");
         return transaktionRepository.getById(transaktion_id);
     }
 
-    /*
-     * Erstellt eine neue Transaktion.
-     * Die Transaktion darf noch keine ID besitzen.
-     */
     public boolean erstelle(Transaktion transaktion) throws SQLException
     {
         validiere(transaktion);
@@ -51,9 +41,6 @@ public class TransaktionService
         return erfolgreich;
     }
 
-    /*
-     * Aktualisiert eine bestehende Transaktion.
-     */
     public boolean aktualisiere(Transaktion transaktion) throws SQLException
     {
         validiere(transaktion);
@@ -83,9 +70,6 @@ public class TransaktionService
         return erfolgreich;
     }
 
-    /*
-     * Prüft die fachlich erforderlichen Transaktiondaten.
-     */
     private void validiere(Transaktion transaktion) throws SQLException
     {
         if (transaktion == null)                                                                        throw new IllegalArgumentException("Die Transaktion darf nicht null sein.");
@@ -95,4 +79,5 @@ public class TransaktionService
     
         if (transaktion.getTransaktionsart() == null)                                                   throw new IllegalArgumentException("Die Transaktion benötigt eine Transaktionsart.");
     }
+
 }
