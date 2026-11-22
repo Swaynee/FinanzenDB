@@ -25,8 +25,17 @@ public class BudgetBuchungRepository
         this.transaktionRepository  = transaktionRepository;
         this.budgetRepository       = budgetRepository;
     }
-    
+
+
     public BudgetBuchung getById(long budget_buchung_id) throws SQLException
+    {
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return getById(budget_buchung_id, con);
+        }
+    }
+    
+    public BudgetBuchung getById(long budget_buchung_id, Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql = sql +     "budget_buchung_id, ";
@@ -36,10 +45,8 @@ public class BudgetBuchungRepository
         sql = sql + "FROM budget_buchung ";
         sql = sql + "WHERE budget_buchung_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getById: Database connection established successfully.");
             stmt.setLong(1, budget_buchung_id);
             LOGGER.log(Level.FINE,"getById: Query Statement prepared.");
 
@@ -48,14 +55,23 @@ public class BudgetBuchungRepository
                 if (rs.next())
                 {
                     LOGGER.log(Level.FINE,"getById: ResultSet retrieved successfully.");
-                    return mapResultSetToBudgetBuchung(rs);
+                    return mapResultSetToBudgetBuchung(rs, con);
                 }
             }
         }
         return null;
     }
 
-    public List<BudgetBuchung> getAlle() throws SQLException
+
+    public List<BudgetBuchung> getAlle() throws SQLException 
+    {
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return getAlle(con);
+        }
+    }
+
+    public List<BudgetBuchung> getAlle(Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql = sql +     "budget_buchung_id, ";
@@ -66,17 +82,15 @@ public class BudgetBuchungRepository
 
         List<BudgetBuchung> budgetBuchungen = new ArrayList<>();
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getAlle: Database connection established successfully.");
             LOGGER.log(Level.FINE,"getAlle: Query Statement prepared.");
 
             try (ResultSet rs = stmt.executeQuery())
             {
                 while (rs.next())
                 {
-                    budgetBuchungen.add(mapResultSetToBudgetBuchung(rs));
+                    budgetBuchungen.add(mapResultSetToBudgetBuchung(rs, con));
                 }
             }
         }
@@ -85,23 +99,30 @@ public class BudgetBuchungRepository
         return budgetBuchungen;
     }
 
+
+
     public boolean save(BudgetBuchung budgetBuchung) throws SQLException
     {
-        if (budgetBuchung.getId() == 0) return insert(budgetBuchung);
-        return update(budgetBuchung);
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return save(budgetBuchung, con);
+        }
     }
 
-    private boolean insert(BudgetBuchung budgetBuchung) throws SQLException
+    public boolean save(BudgetBuchung budgetBuchung, Connection con) throws SQLException
+    {
+        if (budgetBuchung.getId() == 0) return insert(budgetBuchung, con);
+        return update(budgetBuchung, con);
+    }
+
+    private boolean insert(BudgetBuchung budgetBuchung, Connection con) throws SQLException
     {
         String sql = "INSERT INTO budget_buchung ";
         sql = sql +     "(transaktion_id, budget_id, betrag) ";
         sql = sql + "VALUES (?, ?, ?)";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
+        try (PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
-            LOGGER.log(Level.FINE,"insert: Database connection established successfully.");
-
             stmt.setLong(1, budgetBuchung.getTransaktion().getId());
             stmt.setInt(2, budgetBuchung.getBudget().getId());
             stmt.setBigDecimal(3, budgetBuchung.getBetrag());
@@ -124,7 +145,7 @@ public class BudgetBuchungRepository
         return false;
     }
 
-    private boolean update(BudgetBuchung budgetBuchung) throws SQLException
+    private boolean update(BudgetBuchung budgetBuchung, Connection con) throws SQLException
     {
         String sql = "UPDATE budget_buchung ";
         sql = sql +     "SET ";
@@ -133,11 +154,8 @@ public class BudgetBuchungRepository
         sql = sql +         "betrag = ? ";
         sql = sql + "WHERE budget_buchung_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"update: Database connection established successfully.");
-
             stmt.setLong(1, budgetBuchung.getTransaktion().getId());
             stmt.setInt(2, budgetBuchung.getBudget().getId());
             stmt.setBigDecimal(3, budgetBuchung.getBetrag());
@@ -153,14 +171,21 @@ public class BudgetBuchungRepository
         }
     }
 
+
     public boolean delete(BudgetBuchung budgetBuchung) throws SQLException
+    {
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return delete(budgetBuchung, con);
+        }
+    }
+
+    public boolean delete(BudgetBuchung budgetBuchung, Connection con) throws SQLException
     {
         String sql = "DELETE FROM budget_buchung WHERE budget_buchung_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"delete: Database connection established successfully.");
             stmt.setLong(1, budgetBuchung.getId());
             LOGGER.log(Level.FINE,"delete: Query Statement prepared.");
 
@@ -172,17 +197,18 @@ public class BudgetBuchungRepository
         }
     }
 
-    private BudgetBuchung mapResultSetToBudgetBuchung(ResultSet rs) throws SQLException
+
+    private BudgetBuchung mapResultSetToBudgetBuchung(ResultSet rs, Connection con) throws SQLException
     {
         BudgetBuchung budgetBuchung = new BudgetBuchung();
 
         budgetBuchung.setId(rs.getLong("budget_buchung_id"));
 
         long transaktion_id = rs.getLong("transaktion_id");
-        budgetBuchung.setTransaktion(transaktionRepository.getById(transaktion_id));
+        budgetBuchung.setTransaktion(transaktionRepository.getById(transaktion_id, con));
 
         int budget_id = rs.getInt("budget_id");
-        budgetBuchung.setBudget(budgetRepository.getById(budget_id));
+        budgetBuchung.setBudget(budgetRepository.getById(budget_id, con));
 
         budgetBuchung.setBetrag(rs.getBigDecimal("betrag"));
 

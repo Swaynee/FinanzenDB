@@ -17,7 +17,16 @@ public class BudgetRepository
 {
     private static final Logger LOGGER = Logger.getLogger(BudgetRepository.class.getName());
 
-    public Budget getById(int budget_id) throws SQLException
+
+    public Budget getById(int budget_id) throws SQLException 
+    {
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return getById(budget_id, con);
+        }
+    }
+
+    public Budget getById(int budget_id, Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql =  sql +    "budget_id, ";
@@ -26,11 +35,8 @@ public class BudgetRepository
         sql =  sql + "FROM budget ";
         sql =  sql + "WHERE budget_id = ?";
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql);
-            )
+        try (PreparedStatement   stmt    = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getById: Database connection established successfully.");
             stmt.setInt(1, budget_id);
             LOGGER.log(Level.FINE,"getById: Query Statement prepared.");
             try (ResultSet rs = stmt.executeQuery())
@@ -45,11 +51,16 @@ public class BudgetRepository
         return null;
     }
 
-    /*
-     * Retrieves all Budget records from the database.
-     * Returns a list of Budget objects. Empty list if no Budget records are found.
-     */
+
     public List<Budget> getAlleAktiven() throws SQLException
+    {
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return getAlleAktiven(con);
+        }
+    }
+
+    public List<Budget> getAlleAktiven(Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql =  sql +    "budget_id, ";
@@ -60,11 +71,8 @@ public class BudgetRepository
 
         List<Budget> budgets = new ArrayList<>();
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql);
-            )
+        try (PreparedStatement   stmt    = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getAlle: Database connection established successfully.");
             LOGGER.log(Level.FINE,"getAlle: Query Statement prepared.");
             try (ResultSet rs = stmt.executeQuery())
             {
@@ -75,23 +83,23 @@ public class BudgetRepository
         return budgets;
     }
 
-    /*
-     * Saves a Budget object to the database. If the Budget has an ID of 0, it will be inserted as a new record.
-     * If the Budget has a non-zero ID, it will be updated in the database.
-     * Returns true if the operation was successful, false otherwise.
-     */
+
     public boolean save(Budget budget) throws SQLException
     {
-        if (budget.getId() == 0) return insert(budget);
-        return update(budget);
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return save(budget, con);
+        }
     }
 
-    /*
-     * Inserts a new Budget into the database.
-     * And sets the generated budget_id in the provided Budget object.
-     * Returns true if the insertion was successful, false otherwise.
-     */
-    private boolean insert(Budget budget) throws SQLException
+    public boolean save(Budget budget, Connection con) throws SQLException
+    {
+        if (budget.getId() == 0) return insert(budget, con);
+        return update(budget, con);
+    }
+
+
+    private boolean insert(Budget budget, Connection con) throws SQLException
     {
         String sql = "INSERT INTO budget ";
         sql =  sql +    "( ";
@@ -100,11 +108,8 @@ public class BudgetRepository
         sql =  sql +    ") ";
         sql =  sql + "VALUES (?)";
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            )
+        try (PreparedStatement   stmt    = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
-            LOGGER.log(Level.FINE,"insert: Database connection established successfully.");
             stmt.setString(1, budget.getName());
             LOGGER.log(Level.FINE,"insert: Query Statement prepared.");
 
@@ -124,11 +129,7 @@ public class BudgetRepository
         return false;
     }
 
-    /*
-     * Updates an existing Budget in the database based on its budget_id.
-     * Returns true if the update was successful, false otherwise.
-     */
-    private boolean update(Budget budget) throws SQLException
+    private boolean update(Budget budget, Connection con) throws SQLException
     {
         String sql = "UPDATE budget ";
         sql =  sql +    "SET ";
@@ -136,11 +137,8 @@ public class BudgetRepository
         sql =  sql +        "aktiv = ?, ";
         sql =  sql + "WHERE budget_id = ?";
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql);
-            )
+        try (PreparedStatement   stmt    = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"update: Database connection established successfully.");
             stmt.setString(1, budget.getName());
             stmt.setInt(2, budget.getId());
             LOGGER.log(Level.FINE,"update: Query Statement prepared.");
@@ -153,20 +151,22 @@ public class BudgetRepository
         }
     }
 
-        /*
-     * Deactivates a Budget in the database by setting its aktiv field to false.
-     * Returns true if the operation was successful, false otherwise.
-     */
+
     public boolean delete(Budget budget) throws SQLException
     {
-        budget.setAktiv(false);
-        return update(budget);
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return delete(budget, con);
+        }
     }
 
-    /*
-     * Maps the current row of the provided ResultSet to a Budget object.
-     * Assumes that the ResultSet is positioned at a valid row.
-     */
+    public boolean delete(Budget budget, Connection con) throws SQLException
+    {
+        budget.setAktiv(false);
+        return update(budget, con);
+    }
+
+
     private Budget mapResultSetToBudget(ResultSet rs) throws SQLException
     {
         Budget budget = new Budget();

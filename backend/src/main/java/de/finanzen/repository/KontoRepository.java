@@ -17,7 +17,16 @@ public class KontoRepository
 {
     private static final Logger LOGGER = Logger.getLogger(KontoRepository.class.getName());
 
+
     public Konto getById(int konto_id) throws SQLException
+    {
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return getById(konto_id, con);
+        }
+    }
+    
+    public Konto getById(int konto_id, Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql =  sql +    "konto_id, ";
@@ -30,13 +39,11 @@ public class KontoRepository
         sql =  sql + "FROM konto ";
         sql =  sql + "WHERE konto_id = ?";
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql);
-            )
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getById: Database connection established successfully.");
             stmt.setInt(1, konto_id);
             LOGGER.log(Level.FINE,"getById: Query Statement prepared.");
+
             try (ResultSet rs = stmt.executeQuery())
             {
                 if (rs.next()) 
@@ -49,11 +56,16 @@ public class KontoRepository
         return null;
     }
 
-    /*
-     * Retrieves all active Konto records from the database.
-     * Returns a list of Konto objects. Empty list if no active Konto records are found.
-     */
-    public List<Konto> getAlleAktiven() throws SQLException
+
+    public List<Konto> getAlleAktiven() throws SQLException 
+    {
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return getAlleAktiven(con);
+        }
+    }
+
+    public List<Konto> getAlleAktiven(Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql =  sql +    "konto_id, ";
@@ -68,12 +80,10 @@ public class KontoRepository
 
         List<Konto> konten = new ArrayList<>();
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql);
-            )
+        try (PreparedStatement   stmt    = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getAlleAktiven: Database connection established successfully.");
             LOGGER.log(Level.FINE,"getAlleAktiven: Query Statement prepared,");
+
             try (ResultSet rs = stmt.executeQuery())
             {
                 while (rs.next()) konten.add(mapResultSetToKonto(rs));
@@ -83,23 +93,22 @@ public class KontoRepository
         return konten;
     }
 
-    /*
-     * Saves a Konto object to the database. If the Konto has an ID of 0, it will be inserted as a new record.
-     * If the Konto has a non-zero ID, it will be updated in the database.
-     * Returns true if the operation was successful, false otherwise.
-     */
-    public boolean save(Konto konto) throws SQLException
+
+    public boolean save(Konto konto) throws SQLException 
     {
-        if (konto.getId() == 0) return insert(konto);
-        return update(konto);
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return save(konto, con);
+        }
     }
 
-    /*
-     * Inserts a new Konto into the database. 
-     * And sets the generated konto_id in the provided Konto object.
-     * Returns true if the insertion was successful, false otherwise.
-     */
-    private boolean insert(Konto konto) throws SQLException
+    public boolean save(Konto konto, Connection con) throws SQLException
+    {
+        if (konto.getId() == 0) return insert(konto, con);
+        return update(konto, con);
+    }
+
+    private boolean insert(Konto konto, Connection con) throws SQLException
     {
         String sql = "INSERT INTO konto ";
         sql =  sql +    "( ";
@@ -112,11 +121,8 @@ public class KontoRepository
         sql =  sql +    ") ";
         sql =  sql + "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            )
+        try (PreparedStatement   stmt    = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
-            LOGGER.log(Level.FINE,"insert: Database connection established successfully.");
             stmt.setString(1, konto.getName());
             stmt.setString(2, konto.getKontoArt());
             stmt.setBoolean(3,konto.istAktiv());
@@ -140,11 +146,7 @@ public class KontoRepository
         return false;
     }
 
-    /* 
-     * Updates an existing Konto in the database based on its konto_id.
-     * Returns true if the update was successful, false otherwise.
-     */
-    private boolean update(Konto konto) throws SQLException
+    private boolean update(Konto konto, Connection con) throws SQLException
     {
         String sql = "UPDATE konto ";
         sql =  sql +    "SET ";
@@ -156,11 +158,8 @@ public class KontoRepository
         sql =  sql +        "bank       = ? ";
         sql =  sql + "WHERE konto_id = ?";
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql);
-            )
+        try (PreparedStatement   stmt    = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"update: Database connection established successfully.");
             stmt.setString(1, konto.getName());
             stmt.setString(2, konto.getKontoArt());
             stmt.setBoolean(3,konto.istAktiv());
@@ -178,31 +177,28 @@ public class KontoRepository
         }
     }
 
-    /*
-     * Deactivates a Konto in the database by setting its aktiv field to false.
-     * Returns true if the operation was successful, false otherwise.
-     */
-    public boolean delete(Konto konto) throws SQLException
+
+    public boolean delete(Konto konto) throws SQLException 
     {
-        konto.setAktiv(false);
-        return update(konto);           
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return delete(konto, con);
+        }
     }
 
-    /*
-     * Deletes a Konto from the database based on its konto_id.
-     * IMPORTANT: Don't use this method to deactivate a Konto. Use the update method to set the aktiv field to false instead.
-     * Returns true if the deletion was successful, false otherwise.
-     */
-    /* private boolean delete(Konto konto) throws SQLException
+    public boolean delete(Konto konto, Connection con) throws SQLException
+    {
+        konto.setAktiv(false);
+        return update(konto, con);           
+    }
+
+    /* private boolean delete(Konto konto, Connection con) throws SQLException
     {
         String sql = "DELETE FROM konto ";
         sql =  sql + "WHERE konto_id = ?";
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql);
-            )
+        try (PreparedStatement   stmt    = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"delete: Database connection established successfully.");
             stmt.setInt(1, konto.getId());
             LOGGER.log(Level.FINE,"delete: Query Statement prepared,");
 
@@ -214,10 +210,7 @@ public class KontoRepository
         }
     } */
     
-    /*
-     * Maps the current row of the provided ResultSet to a Konto object.
-     * Assumes that the ResultSet is positioned at a valid row.
-     */
+        
     private Konto mapResultSetToKonto(ResultSet rs) throws SQLException
     {
         Konto konto = new Konto();

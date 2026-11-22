@@ -19,7 +19,7 @@ public class DatabaseConnection
 
     public static Connection getConnection() throws SQLException
     {
-        LOGGER.log(Level.FINE,"databaseConnection: connection established");
+        LOGGER.log(Level.FINE,"databaseConnection: connection established successfully");
         return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     }
     

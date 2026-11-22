@@ -17,7 +17,16 @@ public class TransaktionsartRepository
 {
     private static final Logger LOGGER = Logger.getLogger(TransaktionsartRepository.class.getName());
 
-    public Transaktionsart getById(int transaktionsart_id) throws SQLException
+
+    public Transaktionsart getById(int transaktionsart_id) throws SQLException 
+    {
+        try (Connection con = DatabaseConnection.getConnection())  
+        {
+            return getById(transaktionsart_id, con);
+        }
+    }
+
+    public Transaktionsart getById(int transaktionsart_id, Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql = sql + "transaktionsart_id, ";
@@ -25,10 +34,8 @@ public class TransaktionsartRepository
         sql = sql + "FROM transaktionsart ";
         sql = sql + "WHERE transaktionsart_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getById: Database connection established successfully.");
             stmt.setInt(1, transaktionsart_id);
             LOGGER.log(Level.FINE,"getById: Query Statement prepared.");
 
@@ -44,11 +51,16 @@ public class TransaktionsartRepository
         return null;
     }
 
-    /*
-     * Retrieves all Transaktionsart records from the database.
-     * Returns an empty list if no records are found.
-     */
+
     public List<Transaktionsart> getAlle() throws SQLException
+    {
+        try (Connection con = DatabaseConnection.getConnection())  
+        {
+            return getAlle(con);
+        }
+    }
+
+    public List<Transaktionsart> getAlle(Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql = sql +     "transaktionsart_id, ";
@@ -57,16 +69,13 @@ public class TransaktionsartRepository
 
         List<Transaktionsart> transaktionsarten = new ArrayList<>();
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getAlle: Database connection established successfully.");
             LOGGER.log(Level.FINE,"getAlle: Query Statement prepared.");
 
             try (ResultSet rs = stmt.executeQuery())
             {
-                while (rs.next())
-                    transaktionsarten.add(mapResultSetToTransaktionsart(rs));
+                while (rs.next()) transaktionsarten.add(mapResultSetToTransaktionsart(rs));
             }
         }
 
@@ -74,29 +83,29 @@ public class TransaktionsartRepository
         return transaktionsarten;
     }
 
-    /*
-     * Saves a Transaktionsart object.
-     * ID 0 means insert; a non-zero ID means update.
-     */
+
     public boolean save(Transaktionsart transaktionsart) throws SQLException
     {
-        if (transaktionsart.getId() == 0) return insert(transaktionsart);
-        return update(transaktionsart);
+        try (Connection con = DatabaseConnection.getConnection())  
+        {
+            return save(transaktionsart, con);
+        }
     }
 
-    /*
-     * Inserts a new Transaktionsart and sets its generated ID.
-     */
-    private boolean insert(Transaktionsart transaktionsart) throws SQLException
+    public boolean save(Transaktionsart transaktionsart, Connection con) throws SQLException
+    {
+        if (transaktionsart.getId() == 0) return insert(transaktionsart, con);
+        return update(transaktionsart, con);
+    }
+
+    private boolean insert(Transaktionsart transaktionsart, Connection con) throws SQLException
     {
         String sql = "INSERT INTO transaktionsart ";
         sql = sql +     "(name) ";
         sql = sql + "VALUES (?)";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
+        try (PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
-            LOGGER.log(Level.FINE,"insert: Database connection established successfully.");
             stmt.setString(1, transaktionsart.getName());
             LOGGER.log(Level.FINE,"insert: Query Statement prepared.");
 
@@ -116,20 +125,15 @@ public class TransaktionsartRepository
         return false;
     }
 
-    /*
-     * Updates an existing Transaktionsart based on its ID.
-     */
-    private boolean update(Transaktionsart transaktionsart) throws SQLException
+    private boolean update(Transaktionsart transaktionsart, Connection con) throws SQLException
     {
         String sql = "UPDATE transaktionsart ";
         sql = sql +     "SET ";
         sql = sql +         "name = ? ";
         sql = sql + "WHERE transaktionsart_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"update: Database connection established successfully.");
             stmt.setString(1, transaktionsart.getName());
             stmt.setInt(2, transaktionsart.getId());
             LOGGER.log(Level.FINE,"update: Query Statement prepared.");
@@ -142,9 +146,7 @@ public class TransaktionsartRepository
         }
     }
 
-    /*
-     * Maps the current ResultSet row to a Transaktionsart object.
-     */
+
     private Transaktionsart mapResultSetToTransaktionsart(ResultSet rs) throws SQLException
     {
         Transaktionsart transaktionsart = new Transaktionsart();

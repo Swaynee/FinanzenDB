@@ -19,6 +19,14 @@ public class NotizRepository
 
     public Notiz getById(int notiz_id) throws SQLException
     {
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return getById(notiz_id, con);
+        }
+    }
+
+    public Notiz getById(int notiz_id, Connection con) throws SQLException
+    {
         String sql = "SELECT ";
         sql = sql +    "notiz_id, ";
         sql = sql +    "text, ";
@@ -28,11 +36,8 @@ public class NotizRepository
         sql = sql + "FROM notiz ";
         sql = sql + "WHERE notiz_id = ?";
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql);
-            )
+        try (PreparedStatement   stmt    = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getById: Database connection established successfully.");
             stmt.setInt(1, notiz_id);
             LOGGER.log(Level.FINE,"getById: Query Statement prepared.");
 
@@ -48,11 +53,16 @@ public class NotizRepository
         return null;
     }
 
-    /*
-     * Retrieves all Notiz records that have not been deleted.
-     * Returns an empty list if no records are found.
-     */
+
     public List<Notiz> getAlle() throws SQLException
+    {
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return getAlle(con);
+        }
+    }
+
+    public List<Notiz> getAlle(Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql = sql +    "notiz_id, ";
@@ -65,11 +75,8 @@ public class NotizRepository
 
         List<Notiz> notizen = new ArrayList<>();
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql);
-            )
+        try (PreparedStatement   stmt    = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getAlle: Database connection established successfully.");
             LOGGER.log(Level.FINE,"getAlle: Query Statement prepared.");
 
             try (ResultSet rs = stmt.executeQuery())
@@ -81,20 +88,22 @@ public class NotizRepository
         return notizen;
     }
 
-    /*
-     * Saves a Notiz object. If the ID is 0, it will be inserted as a new record.
-     * If the ID is non-zero, it will be updated.
-     */
+
     public boolean save(Notiz notiz) throws SQLException
     {
-        if (notiz.getId() == 0) return insert(notiz);
-        return update(notiz);
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return save(notiz, con);
+        }
     }
 
-    /*
-     * Inserts a new Notiz and sets its generated notiz_id.
-     */
-    private boolean insert(Notiz notiz) throws SQLException
+    public boolean save(Notiz notiz, Connection con) throws SQLException
+    {
+        if (notiz.getId() == 0) return insert(notiz, con);
+        return update(notiz, con);
+    }
+
+    private boolean insert(Notiz notiz, Connection con) throws SQLException
     {
         String sql = "INSERT INTO notiz ";
         sql = sql +    "( ";
@@ -105,11 +114,8 @@ public class NotizRepository
         sql = sql +    ") ";
         sql = sql + "VALUES (?, ?, ?, ?)";
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            )
+        try (PreparedStatement   stmt    = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
-            LOGGER.log(Level.FINE,"insert: Database connection established successfully.");
             stmt.setString(1, notiz.getText());
             stmt.setBigDecimal(2, notiz.getBetrag());
             stmt.setString(3, notiz.getFaellig());
@@ -132,10 +138,7 @@ public class NotizRepository
         return false;
     }
 
-    /*
-     * Updates an existing Notiz based on its notiz_id.
-     */
-    private boolean update(Notiz notiz) throws SQLException
+    private boolean update(Notiz notiz, Connection con) throws SQLException
     {
         String sql = "UPDATE notiz ";
         sql = sql +    "SET ";
@@ -145,11 +148,8 @@ public class NotizRepository
         sql = sql +        "geloescht = ? ";
         sql = sql + "WHERE notiz_id = ?";
 
-        try (   Connection          con     = DatabaseConnection.getConnection();
-                PreparedStatement   stmt    = con.prepareStatement(sql);
-            )
+        try (PreparedStatement   stmt    = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"update: Database connection established successfully.");
             stmt.setString(1, notiz.getText());
             stmt.setBigDecimal(2, notiz.getBetrag());
             stmt.setString(3, notiz.getFaellig());
@@ -165,19 +165,22 @@ public class NotizRepository
         }
     }
 
-    /*
-     * Deactivates a Notiz in the database by setting its geloescht field to true.
-     * Returns true if the operation was successful, false otherwise.
-    */
+
     public boolean delete(Notiz notiz) throws SQLException
     {
-        notiz.setGeloescht(true);
-        return update(notiz);           
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return delete(notiz, con);
+        }
     }
 
-    /*
-     * Maps the current ResultSet row to a Notiz object.
-     */
+    public boolean delete(Notiz notiz, Connection con) throws SQLException
+    {
+        notiz.setGeloescht(true);
+        return update(notiz, con);           
+    }
+
+
     private Notiz mapResultSetToNotiz(ResultSet rs) throws SQLException
     {
         Notiz notiz = new Notiz();

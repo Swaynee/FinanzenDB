@@ -16,9 +16,24 @@ import de.finanzen.model.TransaktionWiederkehrend;
 
 public class TransaktionWiederkehrendRepository
 {
-    private static final Logger LOGGER = Logger.getLogger(TransaktionWiederkehrendRepository.class.getName());
+    private static final Logger             LOGGER = Logger.getLogger(TransaktionWiederkehrendRepository.class.getName());
+    private final TransaktionsartRepository transaktionsartRepository;
+
+    public TransaktionWiederkehrendRepository(TransaktionsartRepository transaktionsartRepository)
+    {
+        this.transaktionsartRepository  = transaktionsartRepository;
+    }
+
 
     public TransaktionWiederkehrend getById(int transaktion_wiederkehrend_id) throws SQLException
+    {
+        try (Connection con = DatabaseConnection.getConnection())
+        {
+            return getById(transaktion_wiederkehrend_id, con);
+        }
+    }
+
+    public TransaktionWiederkehrend getById(int transaktion_wiederkehrend_id, Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql = sql +     "transaktion_wiederkehrend_id, ";
@@ -36,10 +51,8 @@ public class TransaktionWiederkehrendRepository
         sql = sql + "FROM Transaktion_Wiederkehrend ";
         sql = sql + "WHERE transaktion_wiederkehrend_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getById: Database connection established successfully.");
             stmt.setInt(1, transaktion_wiederkehrend_id);
             LOGGER.log(Level.FINE,"getById: Query Statement prepared.");
 
@@ -48,18 +61,23 @@ public class TransaktionWiederkehrendRepository
                 if (rs.next())
                 {
                     LOGGER.log(Level.FINE,"getById: ResultSet retrieved successfully.");
-                    return mapResultSetToTransaktionWiederkehrend(rs);
+                    return mapResultSetToTransaktionWiederkehrend(rs, con);
                 }
             }
         }
         return null;
     }
 
-    /*
-     * Retrieves all recurring transactions.
-     * Returns an empty list if no records are found.
-     */
+
     public List<TransaktionWiederkehrend> getAlle() throws SQLException
+    {
+        try (Connection con = DatabaseConnection.getConnection())
+        {
+            return getAlle(con);
+        }
+    }
+
+    public List<TransaktionWiederkehrend> getAlle(Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql = sql +     "transaktion_wiederkehrend_id, ";
@@ -78,18 +96,13 @@ public class TransaktionWiederkehrendRepository
 
         List<TransaktionWiederkehrend> transaktionen = new ArrayList<>();
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getAlle: Database connection established successfully.");
             LOGGER.log(Level.FINE,"getAlle: Query Statement prepared.");
 
             try (ResultSet rs = stmt.executeQuery())
             {
-                while (rs.next())
-                {
-                    transaktionen.add(mapResultSetToTransaktionWiederkehrend(rs));
-                }
+                while (rs.next()) transaktionen.add(mapResultSetToTransaktionWiederkehrend(rs, con));
             }
         }
 
@@ -97,20 +110,22 @@ public class TransaktionWiederkehrendRepository
         return transaktionen;
     }
 
-    /*
-     * Saves a recurring transaction.
-     * ID 0 means insert; a non-zero ID means update.
-     */
+
     public boolean save(TransaktionWiederkehrend transaktion) throws SQLException
     {
-        if (transaktion.getId() == 0) return insert(transaktion);
-        return update(transaktion);
+        try (Connection con = DatabaseConnection.getConnection())
+        {
+            return save(transaktion, con);
+        }
     }
 
-    /*
-     * Inserts a recurring transaction and sets its generated ID.
-     */
-    private boolean insert(TransaktionWiederkehrend transaktion) throws SQLException
+    public boolean save(TransaktionWiederkehrend transaktion, Connection con) throws SQLException
+    {
+        if (transaktion.getId() == 0) return insert(transaktion, con);
+        return update(transaktion, con);
+    }
+
+    private boolean insert(TransaktionWiederkehrend transaktion, Connection con) throws SQLException
     {
         String sql = "INSERT INTO Transaktion_Wiederkehrend ";
         sql = sql +     "( ";
@@ -128,11 +143,8 @@ public class TransaktionWiederkehrendRepository
         sql = sql +     ") ";
         sql = sql + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
+        try (PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
-            LOGGER.log(Level.FINE,"insert: Database connection established successfully.");
-
             stmt.setInt(1, transaktion.getTransaktionsart().getId());
 
             if (transaktion.getKonto() != null)     stmt.setInt(2, transaktion.getKonto().getId());
@@ -174,10 +186,7 @@ public class TransaktionWiederkehrendRepository
         return false;
     }
 
-    /*
-     * Updates an existing recurring transaction based on its ID.
-     */
-    private boolean update(TransaktionWiederkehrend transaktion) throws SQLException
+    private boolean update(TransaktionWiederkehrend transaktion, Connection con) throws SQLException
     {
         String sql = "UPDATE Transaktion_Wiederkehrend ";
         sql = sql +     "SET ";
@@ -194,11 +203,8 @@ public class TransaktionWiederkehrendRepository
         sql = sql +         "gueltig_bis = ? ";
         sql = sql + "WHERE transaktion_wiederkehrend_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"update: Database connection established successfully.");
-
             stmt.setInt(1, transaktion.getTransaktionsart().getId());
 
             if (transaktion.getKonto() != null)     stmt.setInt(2, transaktion.getKonto().getId());
@@ -234,30 +240,22 @@ public class TransaktionWiederkehrendRepository
         }
     }
 
-    /*
-    * Maps the current ResultSet row to a recurring transaction object.
-    * Loads complete related objects for non-null foreign keys.
-    *
-    * If performance problems occur, replace complete objects with
-    * ID-only dummy objects to reduce database queries.
-    */
-    private TransaktionWiederkehrend mapResultSetToTransaktionWiederkehrend(ResultSet rs) throws SQLException
+
+    private TransaktionWiederkehrend mapResultSetToTransaktionWiederkehrend(ResultSet rs, Connection con) throws SQLException
     {
         TransaktionWiederkehrend transaktion = new TransaktionWiederkehrend();
 
         transaktion.setId(rs.getInt("transaktion_wiederkehrend_id"));
 
-        // Transaktionsart laden
         int transaktionsart_id = rs.getInt("transaktionsart_id");
-        TransaktionsartRepository transaktionsartRepository = new TransaktionsartRepository();
-        transaktion.setTransaktionsart(transaktionsartRepository.getById(transaktionsart_id));
+        transaktion.setTransaktionsart(transaktionsartRepository.getById(transaktionsart_id, con));
 
         // Konto laden, falls vorhanden
         int konto_id = rs.getInt("konto_id");
         if (!rs.wasNull())
         {
             KontoRepository kontoRepository = new KontoRepository();
-            transaktion.setKonto(kontoRepository.getById(konto_id));
+            transaktion.setKonto(kontoRepository.getById(konto_id, con));
         }
 
         // Zielkonto laden, falls vorhanden
@@ -265,7 +263,7 @@ public class TransaktionWiederkehrendRepository
         if (!rs.wasNull())
         {
             KontoRepository kontoRepository = new KontoRepository();
-            transaktion.setKontoZiel(kontoRepository.getById(konto_ziel_id));
+            transaktion.setKontoZiel(kontoRepository.getById(konto_ziel_id, con));
         }
 
         // Budget laden, falls vorhanden
@@ -273,7 +271,7 @@ public class TransaktionWiederkehrendRepository
         if (!rs.wasNull())
         {
             BudgetRepository budgetRepository = new BudgetRepository();
-            transaktion.setBudget(budgetRepository.getById(budget_id));
+            transaktion.setBudget(budgetRepository.getById(budget_id, con));
         }
 
         // Zielbudget laden, falls vorhanden
@@ -281,7 +279,7 @@ public class TransaktionWiederkehrendRepository
         if (!rs.wasNull())
         {
             BudgetRepository budgetRepository = new BudgetRepository();
-            transaktion.setBudgetZiel(budgetRepository.getById(budget_ziel_id));
+            transaktion.setBudgetZiel(budgetRepository.getById(budget_ziel_id, con));
         }
 
         transaktion.setBeschreibung(rs.getString("beschreibung"));

@@ -24,7 +24,15 @@ public class TransaktionRepository
         this.transaktionsartRepository = transaktionsartRepository;
     }
 
-    public Transaktion getById(long transaktion_id) throws SQLException
+    public Transaktion getById(long transaktion_id) throws SQLException 
+    {
+        try (Connection con = DatabaseConnection.getConnection())
+        {
+            return getById(transaktion_id, con);
+        }
+    }
+
+    public Transaktion getById(long transaktion_id, Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql = sql +     "transaktion_id, ";
@@ -35,10 +43,8 @@ public class TransaktionRepository
         sql = sql + "FROM transaktion ";
         sql = sql + "WHERE transaktion_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getById: Database connection established successfully.");
             stmt.setLong(1, transaktion_id);
             LOGGER.log(Level.FINE,"getById: Query Statement prepared.");
 
@@ -47,14 +53,23 @@ public class TransaktionRepository
                 if (rs.next())
                 {
                     LOGGER.log(Level.FINE,"getById: ResultSet retrieved successfully.");
-                    return mapResultSetToTransaktion(rs);
+                    return mapResultSetToTransaktion(rs, con);
                 }
             }
         }
         return null;
     }
 
-    public List<Transaktion> getAlle() throws SQLException
+
+    public List<Transaktion> getAlle() throws SQLException 
+    {
+        try (Connection con = DatabaseConnection.getConnection())
+        {
+            return getAlle(con);
+        }
+    }
+
+    public List<Transaktion> getAlle(Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql = sql +     "transaktion_id, ";
@@ -66,18 +81,13 @@ public class TransaktionRepository
 
         List<Transaktion> transaktionen = new ArrayList<>();
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getAlle: Database connection established successfully.");
             LOGGER.log(Level.FINE,"getAlle: Query Statement prepared.");
 
             try (ResultSet rs = stmt.executeQuery())
             {
-                while (rs.next())
-                {
-                    transaktionen.add(mapResultSetToTransaktion(rs));
-                }
+                while (rs.next()) transaktionen.add(mapResultSetToTransaktion(rs, con));
             }
         }
 
@@ -85,23 +95,29 @@ public class TransaktionRepository
         return transaktionen;
     }
 
+
     public boolean save(Transaktion transaktion) throws SQLException
     {
-        if (transaktion.getId() == 0) return insert(transaktion);
-        return update(transaktion);
+        try (Connection con = DatabaseConnection.getConnection())
+        {
+            return save(transaktion, con);
+        }
     }
 
-    private boolean insert(Transaktion transaktion) throws SQLException
+    public boolean save(Transaktion transaktion, Connection con) throws SQLException
+    {
+        if (transaktion.getId() == 0) return insert(transaktion, con);
+        return update(transaktion, con);
+    }
+
+    private boolean insert(Transaktion transaktion, Connection con) throws SQLException
     {
         String sql = "INSERT INTO transaktion ";
         sql = sql +     "(transaktionsart_id, datum, planungsmonat, beschreibung) ";
         sql = sql + "VALUES (?, ?, ?, ?)";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
+        try (PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
-            LOGGER.log(Level.FINE,"insert: Database connection established successfully.");
-
             stmt.setInt(1, transaktion.getTransaktionsart().getId());
             stmt.setDate(2, Date.valueOf(transaktion.getDatum()));
             stmt.setDate(3, Date.valueOf(transaktion.getPlanungsmonat()));
@@ -125,7 +141,7 @@ public class TransaktionRepository
         return false;
     }
 
-    private boolean update(Transaktion transaktion) throws SQLException
+    private boolean update(Transaktion transaktion, Connection con) throws SQLException
     {
         String sql = "UPDATE transaktion ";
         sql = sql + "SET ";
@@ -135,11 +151,8 @@ public class TransaktionRepository
         sql = sql + "beschreibung = ? ";
         sql = sql + "WHERE transaktion_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"update: Database connection established successfully.");
-
             stmt.setInt(1, transaktion.getTransaktionsart().getId());
             stmt.setDate(2, Date.valueOf(transaktion.getDatum()));
             stmt.setDate(3, Date.valueOf(transaktion.getPlanungsmonat()));
@@ -156,14 +169,21 @@ public class TransaktionRepository
         }
     }
 
+
     public boolean delete(Transaktion transaktion) throws SQLException
+    {
+        try (Connection con = DatabaseConnection.getConnection())
+        {
+            return delete(transaktion, con);
+        }
+    }
+
+    public boolean delete(Transaktion transaktion, Connection con) throws SQLException
     {
         String sql = "DELETE FROM transaktion WHERE transaktion_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"delete: Database connection established successfully.");
             stmt.setLong(1, transaktion.getId());
             LOGGER.log(Level.FINE,"delete: Query Statement prepared.");
 
@@ -175,14 +195,15 @@ public class TransaktionRepository
         }
     }
 
-    private Transaktion mapResultSetToTransaktion(ResultSet rs) throws SQLException
+
+    private Transaktion mapResultSetToTransaktion(ResultSet rs, Connection con) throws SQLException
     {
         Transaktion transaktion = new Transaktion();
 
         transaktion.setId(rs.getLong("transaktion_id"));
 
         int transaktionsart_id = rs.getInt("transaktionsart_id");
-        transaktion.setTransaktionsart(transaktionsartRepository.getById(transaktionsart_id));
+        transaktion.setTransaktionsart(transaktionsartRepository.getById(transaktionsart_id, con));
 
         transaktion.setDatum(rs.getDate("datum").toLocalDate());
         transaktion.setPlanungsmonat(rs.getDate("planungsmonat").toLocalDate());

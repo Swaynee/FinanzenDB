@@ -19,7 +19,7 @@ public class DatabaseTransaction implements AutoCloseable
             con.setAutoCommit(false);
             this.connection = con;
 
-            LOGGER.log(Level.FINE,"databaseTransaction: connection established");
+            LOGGER.log(Level.FINE,"databaseTransaction: connection established successfully");
         }
         catch (SQLException e)
         {
