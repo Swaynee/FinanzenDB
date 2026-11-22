@@ -26,7 +26,16 @@ public class BuchungRepository
         this.kontoRepository        = kontoRepository;
     }
 
+
     public Buchung getById(long buchung_id) throws SQLException
+    {
+        try (Connection con = DatabaseConnection.getConnection())
+        {
+            return getById(buchung_id, con);
+        }
+    }
+
+    public Buchung getById(long buchung_id, Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql = sql +     "buchung_id, ";
@@ -36,10 +45,8 @@ public class BuchungRepository
         sql = sql + "FROM buchung ";
         sql = sql + "WHERE buchung_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getById: Database connection established successfully.");
             stmt.setLong(1, buchung_id);
             LOGGER.log(Level.FINE,"getById: Query Statement prepared.");
 
@@ -48,14 +55,23 @@ public class BuchungRepository
                 if (rs.next())
                 {
                     LOGGER.log(Level.FINE,"getById: ResultSet retrieved successfully.");
-                    return mapResultSetToBuchung(rs);
+                    return mapResultSetToBuchung(rs, con);
                 }
             }
         }
         return null;
     }
 
-    public List<Buchung> getAlle() throws SQLException
+
+    public List<Buchung> getAlle() throws SQLException 
+    {
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return getAlle(con);
+        }
+    }
+
+    public List<Buchung> getAlle(Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql = sql +     "buchung_id, ";
@@ -66,17 +82,15 @@ public class BuchungRepository
 
         List<Buchung> buchungen = new ArrayList<>();
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getAlle: Database connection established successfully.");
             LOGGER.log(Level.FINE,"getAlle: Query Statement prepared.");
 
             try (ResultSet rs = stmt.executeQuery())
             {
                 while (rs.next())
                 {
-                    buchungen.add(mapResultSetToBuchung(rs));
+                    buchungen.add(mapResultSetToBuchung(rs, con));
                 }
             }
         }
@@ -85,23 +99,30 @@ public class BuchungRepository
         return buchungen;
     }
 
+
     public boolean save(Buchung buchung) throws SQLException
     {
-        if (buchung.getId() == 0) return insert(buchung);
-        return update(buchung);
+        try (Connection con = DatabaseConnection.getConnection()) 
+        {
+            return save(buchung, con);
+        }
+    }
+    
+    public boolean save(Buchung buchung, Connection con) throws SQLException
+    {
+        if (buchung.getId() == 0) return insert(buchung, con);
+        return update(buchung, con);
     }
 
-    private boolean insert(Buchung buchung) throws SQLException
+
+    private boolean insert(Buchung buchung, Connection con) throws SQLException
     {
         String sql = "INSERT INTO buchung ";
         sql = sql +     "(transaktion_id, konto_id, betrag) ";
         sql = sql + "VALUES (?, ?, ?)";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
+        try (PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
-            LOGGER.log(Level.FINE,"insert: Database connection established successfully.");
-
             stmt.setLong(1, buchung.getTransaktion().getId());
             stmt.setInt(2, buchung.getKonto().getId());
             stmt.setBigDecimal(3, buchung.getBetrag());
@@ -124,7 +145,7 @@ public class BuchungRepository
         return false;
     }
 
-    private boolean update(Buchung buchung) throws SQLException
+    private boolean update(Buchung buchung, Connection con) throws SQLException
     {
         String sql = "UPDATE buchung ";
         sql = sql +     "SET ";
@@ -133,11 +154,8 @@ public class BuchungRepository
         sql = sql +         "betrag = ? ";
         sql = sql + "WHERE buchung_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"update: Database connection established successfully.");
-
             stmt.setLong(1, buchung.getTransaktion().getId());
             stmt.setInt(2, buchung.getKonto().getId());
             stmt.setBigDecimal(3, buchung.getBetrag());
@@ -153,14 +171,21 @@ public class BuchungRepository
         }
     }
 
+    
     public boolean delete(Buchung buchung) throws SQLException
+    {
+        try (Connection con = DatabaseConnection.getConnection())
+        {
+            return delete(buchung, con);
+        }
+    }
+
+    public boolean delete(Buchung buchung, Connection con) throws SQLException
     {
         String sql = "DELETE FROM buchung WHERE buchung_id = ?";
 
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql))
+        try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"delete: Database connection established successfully.");
             stmt.setLong(1, buchung.getId());
             LOGGER.log(Level.FINE,"delete: Query Statement prepared.");
 
@@ -172,17 +197,18 @@ public class BuchungRepository
         }
     }
 
-    private Buchung mapResultSetToBuchung(ResultSet rs) throws SQLException
+
+    private Buchung mapResultSetToBuchung(ResultSet rs, Connection con) throws SQLException
     {
         Buchung buchung = new Buchung();
 
         buchung.setId(rs.getLong("buchung_id"));
 
         long transaktion_id = rs.getLong("transaktion_id");
-        buchung.setTransaktion(transaktionRepository.getById(transaktion_id));
+        buchung.setTransaktion(transaktionRepository.getById(transaktion_id, con));
 
         int konto_id = rs.getInt("konto_id");
-        buchung.setKonto(kontoRepository.getById(konto_id));
+        buchung.setKonto(kontoRepository.getById(konto_id, con));
 
         buchung.setBetrag(rs.getBigDecimal("betrag"));
 
