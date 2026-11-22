@@ -105,7 +105,7 @@ CREATE TABLE Transaktion_Wiederkehrend
     konto_ziel_id INT UNSIGNED,
     budget_id INT UNSIGNED,
     budget_ziel_id INT UNSIGNED,
-    beschreibung VARCHAR(255) NULL,
+    beschreibung VARCHAR(255) NOT NULL,
     betrag DECIMAL(12, 2) NOT NULL,
     zahlungstag TINYINT UNSIGNED NOT NULL,
     planungsmonat_versatz TINYINT NOT NULL DEFAULT 0,
