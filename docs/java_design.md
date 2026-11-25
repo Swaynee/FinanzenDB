@@ -1,6 +1,4 @@
-# **Zusammenfassung – Designentscheidungen und Planungen**
-
-Projekt: **FinanzenDB – Java-Backend mit MariaDB/MySQL**
+# **Projekt: FinanzenDB – Java-Backend mit MariaDB/MySQL**
 
 Diese Zusammenfassung bezieht sich auf die Architektur- und Implementierungsentscheidungen rund um `Transaktion`, `Buchung` und `BudgetBuchung` sowie die zugehörigen Repository-Klassen.
 
@@ -78,7 +76,7 @@ Jede BudgetBuchung gehört genau einer Transaktion und einem Budget.
 
 ### **Warum keine Rückreferenzen?**
 
-Wir haben uns bewusst gegen Listen in `Transaktion` entschieden.
+Die Entscheidung wurde bewusst gegen Listen in `Transaktion` getroffen.
 
 Das verhindert unnötige gegenseitige Abhängigkeiten und mögliche rekursive Ladeprozesse:
 
@@ -93,6 +91,8 @@ Transaktion
 Die Beziehung wird stattdessen nur von den Kindobjekten aus abgebildet.
 
 ## **3. Datenbankstruktur und Beziehungen**
+
+Das Design des Backends wurde in Anlehnung an Intersystems IRIS' Modell angelehnt, in dem eine persistente Klasse einer SQL Tabelle entspricht, was das objektorientierte arbeiten mit Daten sehr angenehm macht.
 
 Die drei Tabellen sind folgendermaßen miteinander verbunden:
 
@@ -290,31 +290,7 @@ Solche Prüfungen gehören in die Service-Schicht.
 
 Die Datenbank-Fremdschlüssel bleiben zusätzlich als Absicherung bestehen.
 
-## **7. Geplante nächste Schritte**
-
-Ausgehend vom aktuellen Stand ergibt sich folgende sinnvolle Reihenfolge:
-
-1. **Repository-Klassen fertigstellen und kompilieren**
-   - `TransaktionRepository`
-   - `BuchungRepository`
-   - `BudgetBuchungRepository`
-2. **Repository-Methoden für gemeinsame Connections ergänzen**
-   - `getById(id, con)`
-   - `getAlle(con)`
-   - `save(obj, con)`
-   - Weitere Methoden nur bei tatsächlichem Bedarf.
-3. **TransaktionService erweitern**
-   - Eine vollständige Transaktion inklusive Buchungen und Budgetbuchungen speichern.
-   - Alle Schreiboperationen über eine gemeinsame Connection ausführen.
-   - Bei Fehlern Rollback durchführen.
-4. **Services testen**
-   - Validierungen testen.
-   - Erfolgreiches Speichern testen.
-   - Fehlerfälle und Rollback testen.
-5. **JUnit-Tests für die Repository- und Service-Schicht ergänzen.**
-6. **Anschließend die API beziehungsweise die Anbindung an das Frontend planen.**
-
-## **Fazit**
+## **Fazit** ##
 
 Die zentrale Architekturentscheidung lautet:
 
