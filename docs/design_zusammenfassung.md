@@ -16,7 +16,7 @@ Das Projekt soll bewusst möglichst schlank bleiben.
 | Datenbankverwaltung | DBeaver                  |
 | Versionsverwaltung  | Git / GitHub             |
 | Frontend            | HTML, CSS und JavaScript |
-| Frameworks          | Möglichst keine          |
+| Frameworks          | Möglichst wenige          |
 
 Die geplante Architektur besteht aus mehreren Schichten:
 
@@ -103,7 +103,7 @@ Transaktionsarten dienen der semantischen Unterscheidung verschiedener finanziel
 
 Insbesondere sollen auch Umbuchungen und Budgetzuweisungen darüber abgebildet werden.
 
-Eine Umbuchung soll beispielsweise im Frontend als eine zusammenhängende Transaktion dargestellt werden, obwohl intern zwei Kontobuchungen entstehen:
+Eine Umbuchung soll beispielsweise als eine zusammenhängende Transaktion dargestellt werden, obwohl intern zwei Kontobuchungen entstehen:
 
 - Abgang auf dem Quellkonto
 - Zugang auf dem Zielkonto
@@ -154,9 +154,9 @@ Beispiele:
 
 | Vorgang                     | Zahlungstag | Versatz |
 | --------------------------- | ----------- | ------- |
-| Gehalt für Oktober          | 27.09.      | +1      |
-| Stromrechnung für September | 01.10.      | -1      |
-| Normale monatliche Ausgabe  | 15.10.      | 0       |
+| Gehalt für Folgemonat        | 27     | +5      |
+| Stromrechnung für Vormonat | 01      | -3      |
+| Normale monatliche Ausgabe  | 15      | 0       |
 
 ### **Notizen**
 
@@ -262,34 +262,16 @@ Die private Migration wird über `.gitignore` ausgeschlossen:
 /backend/database/migration.sql
 ```
 
-Falls die Datei bereits von Git verfolgt wurde, muss sie mit `git rm --cached` aus der Git-Verfolgung entfernt werden. Genau dieses Problem hast du inzwischen behoben.
 
 ## **5. Aktuelles Thema: IDs mit dem Wert 0**
 
-Bei der Migration ist aufgefallen, dass die alte Datenbank teilweise IDs ab `0` verwendet.
+Bei der Migration ist aufgefallen, dass die alte Datenbank IDs ab `0` verwendet.
 
 MariaDB behandelt bei `AUTO_INCREMENT` eine explizit angegebene `0` normalerweise wie einen nicht angegebenen Wert und vergibt stattdessen eine neue ID.
 
-Dafür gibt es den SQL-Modus:
+Die alten Datensätze wurden entsprechend angepasst, dass sie mit 1 anfangen, anstatt mit 0.
 
-```
-SET SESSION sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
-```
-
-Damit kann eine `0` tatsächlich als ID gespeichert werden.
-
-**Allerdings gibt es hier einen wichtigen Punkt für deine Java-Implementierung:**
-
-Du verwendest in deinen Repositories beziehungsweise Models teilweise `id == 0`, um zu erkennen, dass ein Objekt noch nicht gespeichert wurde und neu eingefügt werden soll.
-
-Das bedeutet: Wenn du in der neuen Datenbank tatsächlich Datensätze mit ID `0` speicherst, kollidiert das mit dieser Konvention.
-
-Deshalb solltest du noch entscheiden, ob du:
-
-- die alten IDs bei der Migration auf neue IDs ab `1` umnummerierst, oder
-- die ID-0-Konvention in deinem Java-Code änderst.
-
-Ich würde die erste Variante bevorzugen. Dann bleibt `0` weiterhin ein eindeutiger Wert für „noch nicht gespeichert“. Bei einer Umnummerierung müssen selbstverständlich auch alle zugehörigen Fremdschlüssel angepasst werden.
+Es wird in den Repositories beziehungsweise Models teilweise `id == 0` benutzt, um zu erkennen, dass ein Objekt noch nicht gespeichert wurde und neu eingefügt werden soll.
 
 ## **6. Zusammenfassung des aktuellen Projektstands**
 
@@ -308,7 +290,4 @@ Ich würde die erste Variante bevorzugen. Dann bleibt `0` weiterhin ein eindeuti
 | Repository-Klassen                | Umgesetzt                                                           |
 | Service-Schicht                   | Inzwischen fertiggestellt                                           |
 | Git-Struktur und `.gitignore`     | Eingerichtet                                                        |
-| Migration der alten Datenbank     | Erstellt, muss an das aktuelle Schema angepasst und getestet werden |
-| Umgang mit ID `0`                 | Noch zu klären                                                      |
-
-**Die wichtigste noch offene Entscheidung ist aktuell der Umgang mit ID&#x20;**`0`**.** Außerdem muss die Migration mit dem endgültigen Datenbankschema übereinstimmen, insbesondere mit den inzwischen entfernten `start_saldo`-Feldern und dem hinzugefügten `planungsmonat_versatz`.
+| Migration der alten Datenbank     | Erstellt, muss an das aktuelle Schema angepasst und getestet werden |           |
