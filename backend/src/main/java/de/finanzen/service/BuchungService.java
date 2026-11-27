@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.finanzen.database.DatabaseConnection;
 import de.finanzen.model.Buchung;
 import de.finanzen.model.Transaktionsart;
 import de.finanzen.repository.BuchungRepository;
@@ -36,10 +35,16 @@ public class BuchungService
 
     public boolean erstelle(Buchung buchung) throws SQLException
     {
-        try (Connection con = DatabaseConnection.getConnection()) 
-        {
-            return erstelle(buchung, con);
-        }
+        validiere(buchung);
+        if (buchung.getId() != 0) throw new IllegalArgumentException("Eine neue Buchung darf noch keine ID besitzen.");
+
+        //normalisiere betrag
+        BigDecimal normalisierterBetrag = normalisiereBuchungsbetrag(buchung.getBetrag(),buchung.getTransaktion().getTransaktionsart());
+        buchung.setBetrag(normalisierterBetrag);
+
+        boolean erfolgreich = buchungRepository.save(buchung);
+        if (erfolgreich) LOGGER.log(Level.INFO, "Buchung erstellt: {0}", buchung.getId());
+        return erfolgreich;
     }
 
     public boolean erstelle(Buchung buchung, Connection con) throws SQLException
@@ -51,7 +56,7 @@ public class BuchungService
         BigDecimal normalisierterBetrag = normalisiereBuchungsbetrag(buchung.getBetrag(),buchung.getTransaktion().getTransaktionsart());
         buchung.setBetrag(normalisierterBetrag);
 
-        boolean erfolgreich = buchungRepository.save(buchung);
+        boolean erfolgreich = buchungRepository.save(buchung, con);
         if (erfolgreich) LOGGER.log(Level.INFO, "Buchung erstellt: {0}", buchung.getId());
         return erfolgreich;
     }
@@ -73,12 +78,40 @@ public class BuchungService
         return erfolgreich;
     }
 
+    public boolean aktualisiere(Buchung buchung, Connection con) throws SQLException
+    {
+        if (buchung.getId() <= 0) throw new IllegalArgumentException("Die Buchung besitzt keine gültige ID.");
+        validiere(buchung);
+
+        //normalisiere betrag
+        BigDecimal normalisierterBetrag = normalisiereBuchungsbetrag(buchung.getBetrag(),buchung.getTransaktion().getTransaktionsart());
+        buchung.setBetrag(normalisierterBetrag);
+
+        Buchung vorhanden = buchungRepository.getById(buchung.getId());
+        if (vorhanden == null) return false;
+
+        boolean erfolgreich = buchungRepository.save(buchung, con);
+        if (erfolgreich) LOGGER.log(Level.INFO, "Buchung aktualisiert: {0}", buchung.getId());
+        return erfolgreich;
+    }
+
+
     public boolean loesche(long buchung_id) throws SQLException
     {
         Buchung buchung = getById(buchung_id);
         if (buchung == null) return false;
 
         boolean erfolgreich = buchungRepository.delete(buchung);
+        if (erfolgreich) LOGGER.log(Level.INFO, "Buchung gel\u00f6scht: {0}", buchung_id);
+        return erfolgreich;
+    }
+
+    public boolean loesche(long buchung_id, Connection con) throws SQLException
+    {
+        Buchung buchung = getById(buchung_id);
+        if (buchung == null) return false;
+
+        boolean erfolgreich = buchungRepository.delete(buchung, con);
         if (erfolgreich) LOGGER.log(Level.INFO, "Buchung gel\u00f6scht: {0}", buchung_id);
         return erfolgreich;
     }

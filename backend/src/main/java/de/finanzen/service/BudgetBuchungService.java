@@ -1,6 +1,7 @@
 package de.finanzen.service;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -40,6 +41,16 @@ public class BudgetBuchungService
         return erfolgreich;
     }
 
+    public boolean erstelle(BudgetBuchung budgetBuchung, Connection con) throws SQLException
+    {
+        validiere(budgetBuchung);
+        if (budgetBuchung.getId() != 0) throw new IllegalArgumentException("Eine neue BudgetBuchung darf noch keine ID besitzen.");
+
+        boolean erfolgreich = budgetBuchungRepository.save(budgetBuchung, con);
+        if (erfolgreich) LOGGER.log(Level.INFO, "BudgetBuchung erstellt: {0}", budgetBuchung.getId());
+        return erfolgreich;
+    }
+
     public boolean aktualisiere(BudgetBuchung budgetBuchung) throws SQLException
     {
         if (budgetBuchung.getId() <= 0) throw new IllegalArgumentException("Die BudgetBuchung besitzt keine gültige ID.");
@@ -53,12 +64,35 @@ public class BudgetBuchungService
         return erfolgreich;
     }
 
+    public boolean aktualisiere(BudgetBuchung budgetBuchung, Connection con) throws SQLException
+    {
+        if (budgetBuchung.getId() <= 0) throw new IllegalArgumentException("Die BudgetBuchung besitzt keine gültige ID.");
+        validiere(budgetBuchung);
+
+        BudgetBuchung vorhanden = budgetBuchungRepository.getById(budgetBuchung.getId());
+        if (vorhanden == null) return false;
+
+        boolean erfolgreich = budgetBuchungRepository.save(budgetBuchung, con);
+        if (erfolgreich) LOGGER.log(Level.INFO, "BudgetBuchung aktualisiert: {0}", budgetBuchung.getId());
+        return erfolgreich;
+    }
+
     public boolean loesche(long budgetBuchung_id) throws SQLException
     {
         BudgetBuchung budgetBuchung = getById(budgetBuchung_id);
         if (budgetBuchung == null) return false;
 
         boolean erfolgreich = budgetBuchungRepository.delete(budgetBuchung);
+        if (erfolgreich) LOGGER.log(Level.INFO, "BudgetBuchung gel\u00f6scht: {0}", budgetBuchung_id);
+        return erfolgreich;
+    }
+
+    public boolean loesche(long budgetBuchung_id, Connection con) throws SQLException
+    {
+        BudgetBuchung budgetBuchung = getById(budgetBuchung_id);
+        if (budgetBuchung == null) return false;
+
+        boolean erfolgreich = budgetBuchungRepository.delete(budgetBuchung, con);
         if (erfolgreich) LOGGER.log(Level.INFO, "BudgetBuchung gel\u00f6scht: {0}", budgetBuchung_id);
         return erfolgreich;
     }
