@@ -24,6 +24,8 @@ public class DatabaseTransaction implements AutoCloseable
         catch (SQLException e)
         {
             con.close();
+            LOGGER.log(Level.FINE,"databaseTransaction: connection closed");
+
             throw e;
         }
     }

@@ -19,28 +19,17 @@ public class BudgetBuchungService
         this.budgetBuchungRepository    = budgetBuchungRepository;
     }
 
-    /*
-     * Gibt alle BudgetBuchungen zurück.
-     */
     public List<BudgetBuchung> getAlle() throws SQLException
     {
         return budgetBuchungRepository.getAlle();
     }
 
-    /*
-     * Sucht eine BudgetBuchung anhand ihrer ID.
-     * Gibt null zurück, wenn keine BudgetBuchung gefunden wurde.
-     */
     public BudgetBuchung getById(long budgetBuchung_id) throws SQLException
     {
         if (budgetBuchung_id <= 0) throw new IllegalArgumentException("Die BudgetBuchung-ID muss größer als 0 sein.");
         return budgetBuchungRepository.getById(budgetBuchung_id);
     }
 
-    /*
-     * Erstellt eine neue BudgetBuchung.
-     * Die BudgetBuchung darf noch keine ID besitzen.
-     */
     public boolean erstelle(BudgetBuchung budgetBuchung) throws SQLException
     {
         validiere(budgetBuchung);
@@ -51,9 +40,6 @@ public class BudgetBuchungService
         return erfolgreich;
     }
 
-    /*
-     * Aktualisiert eine bestehende BudgetBuchung.
-     */
     public boolean aktualisiere(BudgetBuchung budgetBuchung) throws SQLException
     {
         if (budgetBuchung.getId() <= 0) throw new IllegalArgumentException("Die BudgetBuchung besitzt keine gültige ID.");
@@ -67,9 +53,6 @@ public class BudgetBuchungService
         return erfolgreich;
     }
 
-    /*
-     * Löscht eine BudgetBuchung aus der Datenbank.
-     */
     public boolean loesche(long budgetBuchung_id) throws SQLException
     {
         BudgetBuchung budgetBuchung = getById(budgetBuchung_id);
@@ -80,9 +63,6 @@ public class BudgetBuchungService
         return erfolgreich;
     }
 
-    /*
-     * Prüft die fachlich erforderlichen BudgetBuchungdaten.
-     */
     private void validiere(BudgetBuchung budgetBuchung) throws SQLException
     {
         if (budgetBuchung == null)                                                                              throw new IllegalArgumentException("Die BudgetBuchung darf nicht null sein.");

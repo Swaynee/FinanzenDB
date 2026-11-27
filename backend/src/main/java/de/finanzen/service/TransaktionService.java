@@ -18,7 +18,6 @@ public class TransaktionService
         this.transaktionRepository = transaktionRepository;
     }
 
-
     public List<Transaktion> getAlle() throws SQLException
     {
         return transaktionRepository.getAlle();

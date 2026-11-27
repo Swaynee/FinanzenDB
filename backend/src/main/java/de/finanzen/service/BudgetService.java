@@ -19,29 +19,17 @@ public class BudgetService
         this.budgetRepository = budgetRepository;
     }
 
-    /*
-     * Gibt alle aktiven Konten zurück.
-     */
     public List<Budget> getAlleAktiven() throws SQLException
     {
         return budgetRepository.getAlleAktiven();
     }
 
-    /*
-     * Sucht ein Budget anhand seiner ID.
-     * Gibt null zurück, wenn kein Budget gefunden wurde.
-     */
     public Budget getById(int budget_id) throws SQLException
     {
         if (budget_id <= 0) throw new IllegalArgumentException("Die Budget-ID muss größer als 0 sein.");
         return budgetRepository.getById(budget_id);
     }
 
-    /*
-     * Erstellt ein neues Budget.
-     * Das Budget darf noch keine ID besitzen.
-     */
-    @SuppressWarnings("LoggerStringConcat")
     public boolean erstelle(Budget budget) throws SQLException
     {
         validiere(budget);
@@ -49,13 +37,10 @@ public class BudgetService
         if (budget.getId() != 0) throw new IllegalArgumentException("Ein neues Budget darf noch keine ID besitzen.");
 
         boolean erfolgreich = budgetRepository.save(budget);
-        if (erfolgreich) LOGGER.info("Budget erstellt: " + budget.getId());
+        if (erfolgreich) LOGGER.log(Level.INFO,"Budget erstellt: {0}",budget.getId());
         return erfolgreich;
     }
 
-    /*
-     * Aktualisiert ein bestehendes Budget.
-     */
     public boolean aktualisiere(Budget budget) throws SQLException
     {
         validiere(budget);
@@ -70,9 +55,6 @@ public class BudgetService
         return erfolgreich;
     }
 
-    /*
-     * Deaktiviert ein Budget, ohne es aus der Datenbank zu löschen.
-     */
     public boolean deaktiviere(int budget_id) throws SQLException
     {
         Budget budget = getById(budget_id);
@@ -85,9 +67,6 @@ public class BudgetService
         return erfolgreich;
     }
 
-    /*
-     * Prüft die fachlich erforderlichen Budgetdaten.
-     */
     private void validiere(Budget budget)
     {
         if (budget == null)                                                 throw new IllegalArgumentException("Das Budget darf nicht null sein.");

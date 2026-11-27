@@ -19,28 +19,17 @@ public class KontoService
         this.kontoRepository = kontoRepository;
     }
 
-    /*
-     * Gibt alle aktiven Konten zurück.
-     */
     public List<Konto> getAlleAktiven() throws SQLException
     {
         return kontoRepository.getAlleAktiven();
     }
 
-    /*
-     * Sucht ein Konto anhand seiner ID.
-     * Gibt null zurück, wenn kein Konto gefunden wurde.
-     */
     public Konto getById(int konto_id) throws SQLException
     {
         if (konto_id <= 0) throw new IllegalArgumentException("Die Konto-ID muss größer als 0 sein.");
         return kontoRepository.getById(konto_id);
     }
 
-    /*
-     * Erstellt ein neues Konto.
-     * Das Konto darf noch keine ID besitzen.
-     */
     public boolean erstelle(Konto konto) throws SQLException
     {
         validiere(konto);
@@ -52,9 +41,6 @@ public class KontoService
         return erfolgreich;
     }
 
-    /*
-     * Aktualisiert ein bestehendes Konto.
-     */
     public boolean aktualisiere(Konto konto) throws SQLException
     {
         validiere(konto);
@@ -69,9 +55,6 @@ public class KontoService
         return erfolgreich;
     }
 
-    /*
-     * Deaktiviert ein Konto, ohne es aus der Datenbank zu löschen.
-     */
     public boolean deaktiviere(int konto_id) throws SQLException
     {
         Konto konto = getById(konto_id);
@@ -84,9 +67,6 @@ public class KontoService
         return erfolgreich;
     }
 
-    /*
-     * Prüft die fachlich erforderlichen Kontodaten.
-     */
     private void validiere(Konto konto)
     {
         if (konto == null)                                                          throw new IllegalArgumentException("Das Konto darf nicht null sein.");

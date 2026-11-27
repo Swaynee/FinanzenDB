@@ -18,29 +18,17 @@ public class NotizService
         this.notizRepository = notizRepository;
     }
 
-    /*
-     * Gibt alle Notizen zurück.
-     */
     public List<Notiz> getAlle() throws SQLException
     {
         return notizRepository.getAlle();
     }
 
-    /*
-     * Sucht eine Notiz anhand ihrer ID.
-     * Gibt null zurück, wenn keine Notiz gefunden wurde.
-     */
     public Notiz getById(int notiz_id) throws SQLException
     {
         if (notiz_id <= 0) throw new IllegalArgumentException("Die Notiz-ID muss größer als 0 sein.");
         return notizRepository.getById(notiz_id);
     }
 
-    /*
-     * Erstellt eine neue Notiz.
-     * Die Notiz darf noch keine ID besitzen.
-     */
-    @SuppressWarnings("LoggerStringConcat")
     public boolean erstelle(Notiz notiz) throws SQLException
     {
         validiere(notiz);
@@ -48,13 +36,10 @@ public class NotizService
         if (notiz.getId() != 0) throw new IllegalArgumentException("Eine neue Notiz darf noch keine ID besitzen.");
 
         boolean erfolgreich = notizRepository.save(notiz);
-        if (erfolgreich) LOGGER.info("Notiz erstellt: " + notiz.getId());
+        if (erfolgreich) LOGGER.log(Level.INFO,"Notiz erstellt: {0]",notiz.getId());
         return erfolgreich;
     }
 
-    /*
-     * Aktualisiert eine bestehende Notiz.
-     */
     public boolean aktualisiere(Notiz notiz) throws SQLException
     {
         validiere(notiz);
@@ -70,9 +55,6 @@ public class NotizService
         return erfolgreich;
     }
 
-    /*
-     * Markiert eine Notiz als gelöscht.
-     */
     public boolean loesche(Notiz notiz) throws SQLException
     {
         if (notiz == null)      throw new IllegalArgumentException("Die Notiz darf nicht null sein.");
@@ -84,9 +66,6 @@ public class NotizService
         return erfolgreich;
     }
 
-    /*
-     * Prüft die fachlich erforderlichen Notizdaten.
-     */
     private void validiere(Notiz notiz)
     {
         if (notiz == null) throw new IllegalArgumentException("Die Notiz darf nicht null sein.");

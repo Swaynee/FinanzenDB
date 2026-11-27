@@ -20,7 +20,6 @@ public class TransaktionWiederkehrendService
         this.transaktionWiederkehrendRepository = transaktionWiederkehrendRepository;
     }
 
-    
     public List<TransaktionWiederkehrend> getAlle() throws SQLException
     {
         return transaktionWiederkehrendRepository.getAlle();
@@ -43,9 +42,6 @@ public class TransaktionWiederkehrendService
         return erfolgreich;
     }
 
-    /*
-     * Aktualisiert eine bestehende TransaktionWiederkehrend.
-     */
     public boolean aktualisiere(TransaktionWiederkehrend transaktionWiederkehrend) throws SQLException
     {
         validiere(transaktionWiederkehrend);
@@ -60,9 +56,6 @@ public class TransaktionWiederkehrendService
         return erfolgreich;
     }
 
-    /*
-     * Prüft die fachlich erforderlichen TransaktionWiederkehrenddaten.
-     */
     private void validiere(TransaktionWiederkehrend transaktionWiederkehrend)
     {
         if (transaktionWiederkehrend == null)                                                                                           throw new IllegalArgumentException("Die TransaktionWiederkehrend darf nicht null sein.");

@@ -19,28 +19,17 @@ public class TransaktionsartService
         this.transaktionsartRepository = transaktionsartRepository;
     }
 
-    /*
-     * Gibt alle Transaktionsarten zurück.
-     */
     public List<Transaktionsart> getAlle() throws SQLException
     {
         return transaktionsartRepository.getAlle();
     }
 
-    /*
-     * Sucht eine Transaktionsart anhand seiner ID.
-     * Gibt null zurück, wenn keine Transaktionsart gefunden wurde.
-     */
     public Transaktionsart getById(int transaktionsart_id) throws SQLException
     {
         if (transaktionsart_id <= 0) throw new IllegalArgumentException("Die Transaktionsart-ID muss größer als 0 sein.");
         return transaktionsartRepository.getById(transaktionsart_id);
     }
 
-    /*
-     * Erstellt eine neue Transaktionsart.
-     * Die Transaktionsart darf noch keine ID besitzen.
-     */
     public boolean erstelle(Transaktionsart transaktionsart) throws SQLException
     {
         validiere(transaktionsart);
@@ -52,9 +41,6 @@ public class TransaktionsartService
         return erfolgreich;
     }
 
-    /*
-     * Aktualisiert eine bestehende Transaktionsart.
-     */
     public boolean aktualisiere(Transaktionsart transaktionsart) throws SQLException
     {
         validiere(transaktionsart);
@@ -69,9 +55,6 @@ public class TransaktionsartService
         return erfolgreich;
     }
 
-    /*
-     * Prüft die fachlich erforderlichen Transaktionsartdaten.
-     */
     private void validiere(Transaktionsart transaktionsart)
     {
         if (transaktionsart == null)                                                          throw new IllegalArgumentException("Die Transaktionsart darf nicht null sein.");
