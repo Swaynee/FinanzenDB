@@ -69,15 +69,15 @@ public class TransaktionWiederkehrendRepository
     }
 
 
-    public List<TransaktionWiederkehrend> getAlle() throws SQLException
+    public List<TransaktionWiederkehrend> getAlleGueltige() throws SQLException
     {
         try (Connection con = DatabaseConnection.getConnection())
         {
-            return getAlle(con);
+            return getAlleGueltige(con);
         }
     }
 
-    public List<TransaktionWiederkehrend> getAlle(Connection con) throws SQLException
+    public List<TransaktionWiederkehrend> getAlleGueltige(Connection con) throws SQLException
     {
         String sql = "SELECT ";
         sql = sql +     "transaktion_wiederkehrend_id, ";
@@ -93,12 +93,13 @@ public class TransaktionWiederkehrendRepository
         sql = sql +     "gueltig_ab, ";
         sql = sql +     "gueltig_bis ";
         sql = sql + "FROM Transaktion_Wiederkehrend";
+        sql = sql + "WHERE gueltig_bis <= CURRENT_DATE()";
 
         List<TransaktionWiederkehrend> transaktionen = new ArrayList<>();
 
         try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            LOGGER.log(Level.FINE,"getAlle: Query Statement prepared.");
+            LOGGER.log(Level.FINE,"getAlleGueltige: Query Statement prepared.");
 
             try (ResultSet rs = stmt.executeQuery())
             {
@@ -106,7 +107,7 @@ public class TransaktionWiederkehrendRepository
             }
         }
 
-        LOGGER.log(Level.FINE,"getAlle: ResultSet retrieved successfully.");
+        LOGGER.log(Level.FINE,"getAlleGueltige: ResultSet retrieved successfully.");
         return transaktionen;
     }
 

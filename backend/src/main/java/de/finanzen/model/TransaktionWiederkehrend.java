@@ -8,13 +8,22 @@ public class TransaktionWiederkehrend
     // table columns
     private int             transaktion_wiederkehrend_id;
     private Transaktionsart transaktionsart;
+
     private Konto           konto;
     private Konto           konto_ziel;
+
     private Budget          budget;
     private Budget          budget_ziel;
+
     private String          beschreibung;
     private BigDecimal      betrag;
+
+    /// der tag des monats, an dem im normalfall abgebucht wird
+    /// z.B. Strom wird am 02.10. abgebucht -> zahlungstag = 2
     private int             zahlungstag;
+
+    /// der planungsmonat ist bei jeder wiederkehrenden transaktion unterschiedlich:
+    /// z.B. strom wird am 02.10. für planungsmonat september abgebucht -> versatz = -3
     private int             planungsmonat_versatz;
     private LocalDate       gueltig_ab;
     private LocalDate       gueltig_bis;

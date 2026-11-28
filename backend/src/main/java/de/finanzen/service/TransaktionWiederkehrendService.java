@@ -20,9 +20,9 @@ public class TransaktionWiederkehrendService
         this.transaktionWiederkehrendRepository = transaktionWiederkehrendRepository;
     }
 
-    public List<TransaktionWiederkehrend> getAlle() throws SQLException
+    public List<TransaktionWiederkehrend> getAlleGueltige() throws SQLException
     {
-        return transaktionWiederkehrendRepository.getAlle();
+        return transaktionWiederkehrendRepository.getAlleGueltige();
     }
 
     public TransaktionWiederkehrend getById(int transaktionWiederkehrend_id) throws SQLException
@@ -67,4 +67,7 @@ public class TransaktionWiederkehrendService
 
         if (transaktionWiederkehrend.getTransaktionsart() == null)                                                                      throw new IllegalArgumentException("Die TransaktionWiederkehrend benötigt eine Transaktionsart.");
     }
+
+    //TODO: hilfsmethode die das datum/planungsmonat für die transaktion mappt, anstelle im konstruktor von transaktion(wiederkehrendetransaktion)
+
 }

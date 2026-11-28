@@ -7,7 +7,12 @@ public class Transaktion
     // table columns
     private long            transaktion_id = 0;
     private Transaktionsart transaktionsart;
+
+    /// tatsächlicher buchungstag
     private LocalDate       datum;
+
+    /// planungsmonat, um differenzen des monats in dem abgebucht wird auszugleichen
+    /// z.B. Strom für September wird erst am 3.Oktober abgebucht -> planungsmonat september, buchungstag 03.10. 
     private LocalDate       planungsmonat;
     private String          beschreibung;
 
@@ -15,6 +20,27 @@ public class Transaktion
     public Transaktion()
     {
 
+    }
+
+    public Transaktion(TransaktionWiederkehrend wiederkehrend) 
+    {
+        LocalDate heute = LocalDate.now();
+        LocalDate planungsMonat;
+        LocalDate buchungsTag;
+
+        //letzter tag des monats, falls zahlungstag größer ist (z.B. 30 im Februar -> 28/29)
+        int zahlungstagAbgesichert = Math.min(wiederkehrend.getZahlungstag(),heute.lengthOfMonth());
+        
+        //planungsmonat anhand von heute und versatz berechnen (siehe transaktion/transaktionwiederkehrend felder)
+        planungsMonat = heute.plusDays(wiederkehrend.getPlanungsmonatVersatz());
+
+        //buchungstag anhand vom aktuellen monat mit zahlungstag als tag festlegen
+        buchungsTag = LocalDate.of(heute.getYear(),heute.getMonth(),zahlungstagAbgesichert);
+
+        this.beschreibung       = wiederkehrend.getBeschreibung();
+        this.datum              = buchungsTag;
+        this.planungsmonat      = planungsMonat;
+        this.transaktionsart    = wiederkehrend.getTransaktionsart();
     }
 
     // getters
