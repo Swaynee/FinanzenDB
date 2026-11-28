@@ -96,7 +96,7 @@ public class FinanzenService
         }
     }
 
-    public boolean budgetsUmbuchen(Transaktion transaktion, BigDecimal betrag, Budget quellBudget, Budget zielBudget, Connection con) throws SQLException
+    private boolean budgetsUmbuchen(Transaktion transaktion, BigDecimal betrag, Budget quellBudget, Budget zielBudget, Connection con) throws SQLException
     {
         boolean buchungQuelleErfolgreich;
 
@@ -128,7 +128,8 @@ public class FinanzenService
                 {
                     if (transaktionWiederkehrend.getKontoZiel() != null) //wenn zielkonto vorhanden, dann ist es eine umbuchung
                     {
-                        kontenUmbuchen(transaktion,transaktionWiederkehrend.getBetrag(),transaktionWiederkehrend.getKonto(),transaktionWiederkehrend.getKontoZiel(), con);
+                        erfolgreich = kontenUmbuchen(transaktion,transaktionWiederkehrend.getBetrag(),transaktionWiederkehrend.getKonto(),transaktionWiederkehrend.getKontoZiel(), con);
+                        if (!erfolgreich) return false;
                     }
                     else //ansonsten einfache buchung
                     {
@@ -142,7 +143,8 @@ public class FinanzenService
                 {
                     if (transaktionWiederkehrend.getBudgetZiel() != null) //wenn zielbudget vorhanden, dann ist es eine budget umbuchung
                     {
-                        budgetsUmbuchen(transaktion,transaktionWiederkehrend.getBetrag(),transaktionWiederkehrend.getBudget(),transaktionWiederkehrend.getBudgetZiel(), con);
+                        erfolgreich = budgetsUmbuchen(transaktion,transaktionWiederkehrend.getBetrag(),transaktionWiederkehrend.getBudget(),transaktionWiederkehrend.getBudgetZiel(), con);
+                        if (!erfolgreich) return false;
                     }
                     else //ansonsten einfache budget buchung
                     {
