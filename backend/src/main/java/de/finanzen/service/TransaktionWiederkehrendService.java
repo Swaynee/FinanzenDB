@@ -3,6 +3,7 @@ package de.finanzen.service;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,6 +69,18 @@ public class TransaktionWiederkehrendService
         if (transaktionWiederkehrend.getTransaktionsart() == null)                                                                      throw new IllegalArgumentException("Die TransaktionWiederkehrend benötigt eine Transaktionsart.");
     }
 
-    //TODO: hilfsmethode die das datum/planungsmonat für die transaktion mappt, anstelle im konstruktor von transaktion(wiederkehrendetransaktion)
+    public LocalDate mapPlanungsmonat(int versatzInTagen) 
+    {
+        LocalDate heute = LocalDate.now();
 
+        return heute.plusDays(versatzInTagen);
+    }
+
+    public LocalDate mapBuchungstag(int zahlungstag) 
+    {
+        LocalDate heute             = LocalDate.now();
+        int zahlungstagAbgesichert  = Math.min(zahlungstag,heute.lengthOfMonth()); //letzter tag des monats, falls zahlungstag größer ist (z.B. 30 im Februar -> 28/29)
+
+        return LocalDate.of(heute.getYear(),heute.getMonth(),zahlungstagAbgesichert);
+    }
 }

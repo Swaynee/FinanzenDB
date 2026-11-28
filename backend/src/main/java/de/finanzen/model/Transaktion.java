@@ -22,27 +22,6 @@ public class Transaktion
 
     }
 
-    public Transaktion(TransaktionWiederkehrend wiederkehrend) 
-    {
-        LocalDate heute = LocalDate.now();
-        LocalDate planungsMonat;
-        LocalDate buchungsTag;
-
-        //letzter tag des monats, falls zahlungstag größer ist (z.B. 30 im Februar -> 28/29)
-        int zahlungstagAbgesichert = Math.min(wiederkehrend.getZahlungstag(),heute.lengthOfMonth());
-        
-        //planungsmonat anhand von heute und versatz berechnen (siehe transaktion/transaktionwiederkehrend felder)
-        planungsMonat = heute.plusDays(wiederkehrend.getPlanungsmonatVersatz());
-
-        //buchungstag anhand vom aktuellen monat mit zahlungstag als tag festlegen
-        buchungsTag = LocalDate.of(heute.getYear(),heute.getMonth(),zahlungstagAbgesichert);
-
-        this.beschreibung       = wiederkehrend.getBeschreibung();
-        this.datum              = buchungsTag;
-        this.planungsmonat      = planungsMonat;
-        this.transaktionsart    = wiederkehrend.getTransaktionsart();
-    }
-
     // getters
     public long             getId()                 { return this.transaktion_id;   }
     public Transaktionsart  getTransaktionsart()    { return this.transaktionsart;  }
