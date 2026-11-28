@@ -16,12 +16,14 @@ import de.finanzen.model.Transaktion;
 
 public class TransaktionRepository
 {
-    private static final Logger                 LOGGER = Logger.getLogger(TransaktionRepository.class.getName());
-    private final TransaktionsartRepository     transaktionsartRepository;
+    private static final Logger                         LOGGER = Logger.getLogger(TransaktionRepository.class.getName());
+    private final TransaktionsartRepository             transaktionsartRepository;
+    private final TransaktionWiederkehrendRepository    transaktionWiederkehrendRepository;
 
-    public TransaktionRepository (TransaktionsartRepository transaktionsartRepository)
+    public TransaktionRepository (TransaktionsartRepository transaktionsartRepository, TransaktionWiederkehrendRepository transaktionWiederkehrendRepository)
     {
-        this.transaktionsartRepository = transaktionsartRepository;
+        this.transaktionsartRepository          = transaktionsartRepository;
+        this.transaktionWiederkehrendRepository = transaktionWiederkehrendRepository;
     }
 
     public Transaktion getById(long transaktion_id) throws SQLException 
@@ -37,6 +39,7 @@ public class TransaktionRepository
         String sql = "SELECT ";
         sql = sql +     "transaktion_id, ";
         sql = sql +     "transaktionsart_id, ";
+        sql = sql +     "transaktion_wiederkehrend_id, ";
         sql = sql +     "datum, ";
         sql = sql +     "planungsmonat, ";
         sql = sql +     "beschreibung ";
@@ -74,6 +77,7 @@ public class TransaktionRepository
         String sql = "SELECT ";
         sql = sql +     "transaktion_id, ";
         sql = sql +     "transaktionsart_id, ";
+        sql = sql +     "transaktion_wiederkehrend_id, ";
         sql = sql +     "datum, ";
         sql = sql +     "planungsmonat, ";
         sql = sql +     "beschreibung ";
@@ -113,15 +117,16 @@ public class TransaktionRepository
     private boolean insert(Transaktion transaktion, Connection con) throws SQLException
     {
         String sql = "INSERT INTO transaktion ";
-        sql = sql +     "(transaktionsart_id, datum, planungsmonat, beschreibung) ";
-        sql = sql + "VALUES (?, ?, ?, ?)";
+        sql = sql +     "(transaktionsart_id, transaktion_wiederkehrend_id, datum, planungsmonat, beschreibung) ";
+        sql = sql + "VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
             stmt.setInt(1, transaktion.getTransaktionsart().getId());
-            stmt.setDate(2, Date.valueOf(transaktion.getDatum()));
-            stmt.setDate(3, Date.valueOf(transaktion.getPlanungsmonat()));
-            stmt.setString(4, transaktion.getBeschreibung());
+            stmt.setInt(2, transaktion.getTransaktionWiederkehrend().getId());
+            stmt.setDate(3, Date.valueOf(transaktion.getDatum()));
+            stmt.setDate(4, Date.valueOf(transaktion.getPlanungsmonat()));
+            stmt.setString(5, transaktion.getBeschreibung());
 
             LOGGER.log(Level.FINE,"insert: Query Statement prepared.");
 
@@ -145,19 +150,21 @@ public class TransaktionRepository
     {
         String sql = "UPDATE transaktion ";
         sql = sql + "SET ";
-        sql = sql + "transaktionsart_id = ?, ";
-        sql = sql + "datum = ?, ";
-        sql = sql + "planungsmonat = ?, ";
-        sql = sql + "beschreibung = ? ";
+        sql = sql +     "transaktionsart_id = ?, ";
+        sql = sql +     "transaktion_wiederkehrend_id = ?, ";
+        sql = sql +     "datum = ?, ";
+        sql = sql +     "planungsmonat = ?, ";
+        sql = sql +     "beschreibung = ? ";
         sql = sql + "WHERE transaktion_id = ?";
 
         try (PreparedStatement stmt = con.prepareStatement(sql))
         {
             stmt.setInt(1, transaktion.getTransaktionsart().getId());
-            stmt.setDate(2, Date.valueOf(transaktion.getDatum()));
-            stmt.setDate(3, Date.valueOf(transaktion.getPlanungsmonat()));
-            stmt.setString(4, transaktion.getBeschreibung());
-            stmt.setLong(5, transaktion.getId());
+            stmt.setInt(2, transaktion.getTransaktionWiederkehrend().getId());
+            stmt.setDate(3, Date.valueOf(transaktion.getDatum()));
+            stmt.setDate(4, Date.valueOf(transaktion.getPlanungsmonat()));
+            stmt.setString(5, transaktion.getBeschreibung());
+            stmt.setLong(6, transaktion.getId());
 
             LOGGER.log(Level.FINE,"update: Query Statement prepared.");
 
@@ -204,6 +211,9 @@ public class TransaktionRepository
 
         int transaktionsart_id = rs.getInt("transaktionsart_id");
         transaktion.setTransaktionsart(transaktionsartRepository.getById(transaktionsart_id, con));
+
+        int transaktion_wiederkehrend_id = rs.getInt("transaktion_wiederkehrend_id");
+        transaktion.setTransaktionWiederkehrend(transaktionWiederkehrendRepository.getById(transaktion_wiederkehrend_id, con));
 
         transaktion.setDatum(rs.getDate("datum").toLocalDate());
         transaktion.setPlanungsmonat(rs.getDate("planungsmonat").toLocalDate());

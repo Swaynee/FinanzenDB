@@ -43,11 +43,14 @@ CREATE TABLE Transaktion
 (
     transaktion_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     transaktionsart_id INT UNSIGNED NOT NULL,
+    transaktion_wiederkehrend_id INT UNSIGNED,
     datum DATE NOT NULL,
     planungsmonat DATE NOT NULL,
     beschreibung VARCHAR(255) NOT NULL,
     PRIMARY KEY (transaktion_id),
-    CONSTRAINT fk_transaktionsart FOREIGN KEY (transaktionsart_id) REFERENCES Transaktionsart (transaktionsart_id)
+    CONSTRAINT fk_transaktionsart FOREIGN KEY (transaktionsart_id) REFERENCES Transaktionsart (transaktionsart_id),
+    CONSTRAINT transaktion_wiederkehrend_id FOREIGN KEY (transaktion_wiederkehrend_id) REFERENCES Transaktion_Wiederkehrend (transaktion_wiederkehrend_id),
+    UNIQUE (transaktion_wiederkehrend_id, planungsmonat)
 );
 
 -- BUCHUNG
